@@ -18,7 +18,8 @@ html, body {
 .header {
     display: flex;
     flex-direction: column;
-    border-bottom: solid crimson 10px;
+    border-bottom: dashed crimson 10px;
+    background-color: mediumseagreen;
 }
 
 .navHeader {

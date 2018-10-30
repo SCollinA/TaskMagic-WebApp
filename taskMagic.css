@@ -17,14 +17,19 @@ html, body {
 
 .header {
     display: flex;
+    flex-direction: column;
+    border-bottom: solid crimson 10px;
+}
+
+.navHeader {
+    display: flex;
     justify-content: flex-start;
     padding: 5% 2%;
     font-size: 1.5rem;
     background-color: teal;
-    border-bottom: ridge silver 10px;
 }
 
-.header > * {
+.navHeader > * {
     margin-right: 5%;
     margin-left: 2%;
 }
@@ -33,12 +38,34 @@ html, body {
     margin: auto 0;
     background-color: lightgreen;
     padding: 2%;
+    border-radius: 1em;
 }
 
 .parentTask {
     background-color: coral;
     padding: 5%;
     min-width: 50%;
+    border-radius: 1em;
+}
+
+.searchbar {
+    display: flex;
+    justify-content: space-around;
+    padding: 5px;
+    background-color: darkgray;
+}
+
+#taskSearch {
+    margin: 0;
+    flex: 1;
+    height: 1.5em;
+    padding: 2px 5px;
+    border-radius: 15px;
+    font-size: 2em;
+}
+
+#taskSearch:focus {
+    outline: none;
 }
 
 .tasks {
@@ -55,6 +82,7 @@ html, body {
     padding: 2% 5%;
     margin: 2% 5%;
     background-color: cornflowerblue;
+    border-radius: 1em;
 }
 
 .task > p {

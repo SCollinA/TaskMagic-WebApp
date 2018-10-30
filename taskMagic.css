@@ -20,6 +20,8 @@ html, body {
     justify-content: flex-start;
     padding: 5% 2%;
     font-size: 1.5rem;
+    background-color: teal;
+    border-bottom: ridge silver 10px;
 }
 
 .header > * {
@@ -29,9 +31,14 @@ html, body {
 
 .backNav {
     margin: auto 0;
+    background-color: lightgreen;
+    padding: 2%;
 }
 
 .parentTask {
+    background-color: coral;
+    padding: 5%;
+    min-width: 50%;
 }
 
 .tasks {
@@ -46,9 +53,24 @@ html, body {
     display: flex;
     justify-content: space-between;
     padding: 2% 5%;
+    margin: 2% 5%;
+    background-color: cornflowerblue;
 }
 
 .task > p {
     font-size: .5em;
     margin: auto 0;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-around;
+    height: 5%;
+    background-color: violet;
+}
+
+#addTask {
+    flex: 1;
+    text-align: center;
+    margin: auto;
 }

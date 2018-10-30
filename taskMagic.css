@@ -25,7 +25,7 @@ html, body {
 .navHeader {
     display: flex;
     justify-content: flex-start;
-    padding: 5% 2%;
+    padding: 2%;
     font-size: 1.5rem;
     background-color: teal;
 }
@@ -44,9 +44,15 @@ html, body {
 
 .parentTask {
     background-color: coral;
-    padding: 5%;
+    padding: 2%;
     min-width: 50%;
     border-radius: 1em;
+}
+
+.content {
+    flex: 1;
+    overflow-y: scroll;
+    background-color: cyan;
 }
 
 .searchbar {
@@ -54,6 +60,8 @@ html, body {
     justify-content: space-around;
     padding: 5px;
     background-color: darkgray;
+    position: sticky;
+    top: 0;
 }
 
 #taskSearch {
@@ -74,7 +82,6 @@ html, body {
     flex: 1;
     background-color: aqua;
     font-size: 2rem;
-    overflow-y: scroll;
 }
 
 .task {
@@ -96,6 +103,9 @@ html, body {
     justify-content: space-around;
     height: 5%;
     background-color: violet;
+    border-radius: 5px;
+    position: sticky;
+    bottom: 0;
 }
 
 #addTask {

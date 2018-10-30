@@ -16,7 +16,7 @@ addTaskButton.addEventListener('click', addTask)
 function Task(taskName) {
     return {
         name: taskName,
-        parent: [],
+        parents: [],
         children: [],
         addTask(task) {
             this.children.push(task)

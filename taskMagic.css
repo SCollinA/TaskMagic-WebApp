@@ -49,12 +49,6 @@ html, body {
     border-radius: 1em;
 }
 
-.content {
-    flex: 1;
-    overflow-y: scroll;
-    background-color: cyan;
-}
-
 .searchbar {
     display: flex;
     justify-content: space-around;
@@ -82,6 +76,7 @@ html, body {
     flex: 1;
     background-color: aqua;
     font-size: 2rem;
+    overflow-y: scroll;
 }
 
 .task {

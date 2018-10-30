@@ -35,7 +35,7 @@ html, body {
     margin-left: 2%;
 }
 
-.backNav {
+#backNav {
     margin: auto 0;
     background-color: lightgreen;
     padding: 2%;

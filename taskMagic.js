@@ -2,16 +2,18 @@
 // elements from the page
 const body = document.querySelector('body')
 const parentTaskName = document.getElementById('parentTaskName')
+const backNav = document.getElementById('backNav')
 const taskSearch = document.getElementById('taskSearch')
 const tasksDiv = document.querySelector('div.tasks')
 const taskCellPrototype = tasksDiv.firstElementChild.cloneNode(true)
 const addTaskButton = document.getElementById('addTask')
 // will load parent task from cache later
-const parentTask = Task(parentTaskName.textContent)
+let parentTask = Task(parentTaskName.textContent)
+let previousParent = parentTask
 
 // event listeners
 addTaskButton.addEventListener('click', addNewTask)
-
+backNav.addEventListener('click', goBackToTask)
 // objects
 function Task(taskName='') {
     return {
@@ -37,7 +39,7 @@ function addNewTask() {
     parentTask.addTask(Task(getSearchTextValue()))
 
     // update page
-    redrawChildTasks()
+    redrawTasks()
     taskSearch.value = ''
 }
 
@@ -49,11 +51,31 @@ function drawTask(task) {
     let newTaskChildrensNames = newTask.lastElementChild
     newTaskName.textContent = task.name
     newTaskChildrensNames.textContent = task.children.map(childTask => childTask.name).join(', ')
-    newTask.addEventListener('click', selectTask)
+    newTask.addEventListener('click', event => {
+        const taskDiv = event.target
+        const taskName = taskDiv.firstElementChild.textContent
+        let selectedTask
+        parentTask.children.forEach(childTask => {
+            if (childTask.name === taskName) {
+                selectedTask = childTask
+            }
+        })
+        selectTask(selectedTask)
+    })
     tasksDiv.appendChild(newTask)
 }
 
-function redrawChildTasks() {
+function redrawTasks() {
+    parentTaskName.textContent = parentTask.name
+    backNav.textContent = previousParent.name
+
+    // remove back button if necessary
+    if (!parentTask.parents.length > 0) {
+        backNav.style.visibility = 'hidden'
+    } else {
+        backNav.style.visibility = 'visible'
+    }
+
     // empty tasks div
     while (tasksDiv.childElementCount > 0) {
         tasksDiv.firstElementChild.remove()
@@ -64,16 +86,15 @@ function redrawChildTasks() {
     })
 }
 
-function selectTask(event) {
-    const taskDiv = event.target
-    const taskName = taskDiv.firstElementChild.value
-    parentTask.children.forEach(childTask => {
-        if (childTask.name === taskName) {
-            parentTask = childTask
-            parentTaskName.textContent = childTask.name
-        }
-    })
-    redrawChildTasks()
+function selectTask(task) {
+    previousParent = parentTask
+    parentTask = task
+    redrawTasks()
+}
+
+function goBackToTask() {
+    parentTask = previousParent
+    redrawTasks()
 }
 
 function getSearchTextValue() {

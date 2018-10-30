@@ -10,10 +10,10 @@ const addTaskButton = document.getElementById('addTask')
 const parentTask = Task(parentTaskName.textContent)
 
 // event listeners
-addTaskButton.addEventListener('click', addTask)
+addTaskButton.addEventListener('click', addNewTask)
 
 // objects
-function Task(taskName) {
+function Task(taskName='') {
     return {
         name: taskName,
         parents: [],
@@ -28,24 +28,52 @@ function Task(taskName) {
 //functions
 
 // get a task clone
-function addTask() {
+function addNewTask() {
     // don't add an unnamed task
     if (getSearchTextValue() == '') {
         return
     }
+    // save task to file here
+    parentTask.addTask(Task(getSearchTextValue()))
+
+    // update page
+    redrawChildTasks()
+    taskSearch.value = ''
+}
+
+function drawTask(task) {
     // use prototype in case first task is not good clone choice
     let newTask = taskCellPrototype.cloneNode(true)
     let newTaskName = newTask.firstElementChild
     // no children to add to new task, so remove all text
     let newTaskChildrensNames = newTask.lastElementChild
-
-    // save task to file here
-
-    // update task appearance
-    newTaskName.textContent = getSearchTextValue()
-    newTaskChildrensNames.textContent = ''
+    newTaskName.textContent = task.name
+    newTaskChildrensNames.textContent = task.children.map(childTask => childTask.name).join(', ')
+    newTask.addEventListener('click', selectTask)
     tasksDiv.appendChild(newTask)
-    taskSearch.value = ''
+}
+
+function redrawChildTasks() {
+    // empty tasks div
+    while (tasksDiv.childElementCount > 0) {
+        tasksDiv.firstElementChild.remove()
+    }
+    // add tasks back
+    parentTask.children.forEach(childTask => {
+        drawTask(childTask)
+    })
+}
+
+function selectTask(event) {
+    const taskDiv = event.target
+    const taskName = taskDiv.firstElementChild.value
+    parentTask.children.forEach(childTask => {
+        if (childTask.name === taskName) {
+            parentTask = childTask
+            parentTaskName.textContent = childTask.name
+        }
+    })
+    redrawChildTasks()
 }
 
 function getSearchTextValue() {

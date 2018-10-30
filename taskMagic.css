@@ -1,0 +1,54 @@
+/* give it that appy feel */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+*, ::before, ::after {
+    margin: 0;
+}
+
+.header {
+    display: flex;
+    justify-content: flex-start;
+    padding: 5% 2%;
+    font-size: 1.5rem;
+}
+
+.header > * {
+    margin-right: 5%;
+    margin-left: 2%;
+}
+
+.backNav {
+    margin: auto 0;
+}
+
+.parentTask {
+}
+
+.tasks {
+    margin: 0;
+    flex: 1;
+    background-color: aqua;
+    font-size: 2rem;
+    overflow-y: scroll;
+}
+
+.task {
+    display: flex;
+    justify-content: space-between;
+    padding: 2% 5%;
+}
+
+.task > p {
+    font-size: .5em;
+    margin: auto 0;
+}

@@ -11,7 +11,7 @@ const addTaskButton = document.getElementById('addTask')
 let loadedTask = JSON.parse(localStorage.getItem('rootTask'))
 let parentTask = (loadedTask) ? loadedTask : new Task(parentTaskName.textContent)
 let searchTask = new Task('Searching...')
-let previousParents = [parentTask]
+let previousParents = []
 
 // event listeners
 taskSearch.addEventListener('keydown', e => {
@@ -63,14 +63,18 @@ function saveTasks() {
 }
 
 function rootTask() {
-    return previousParents[previousParents.length - 1]
+    if (previousParents.length > 0) {
+        return previousParents[previousParents.length - 1]
+    } else {
+        return parentTask
+    }
 }
 
-function allTasks() {
+function getAllTasks() {
     let allTasks = []
     rootTask().children.forEach(childTask => {
         allTasks.push(childTask)
-        allChildren(childTask).forEach(grandchild => {
+        getAllChildren(childTask).forEach(grandchild => {
             allTasks.push(grandchild)
         })
     })
@@ -78,11 +82,11 @@ function allTasks() {
     return allTasks
 }
 
-function allChildren(task) {
+function getAllChildren(task) {
     let allChildren = []
     task.children.forEach(childTask => {
         allChildren.push(childTask)
-        allChildren(childTask).forEach(grandchild => {
+        getAllChildren(childTask).forEach(grandchild => {
             allChildren.push(grandchild)
         })
     })
@@ -140,12 +144,19 @@ function goBackToTask() {
     redrawTasks()
 }
 
+function isSearching() {
+    if (getSearchTextValue()) {
+        return true
+    }
+    return false
+}
+
 function getSearchTextValue() {
     return taskSearch.value
 }
 
 function updateSearchResults(searchText) {
-    searchTask.children = allTasks().filter(task => {
+    searchTask.children = getAllTasks().filter(task => {
         if (task.name.includes(searchText)) {
             return true
         }

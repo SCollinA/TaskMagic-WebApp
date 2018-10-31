@@ -13,12 +13,25 @@ let parentTask = (loadedTask) ? loadedTask : new Task(parentTaskName.textContent
 let previousParents = []
 
 // event listeners
+taskSearch.addEventListener('keypress', e => {
+    // const searchText = e.target.value
+    // detect if return key was pressed
+    if (e.keyCode == 13) {
+    // if (searchText.length > 0 && searchText[searchText.length - 1] == String.fromCharCode('0x0a')) {
+        addNewTask()
+        // taskSearch.blur() // removes focus
+    }
+})
 addTaskButton.addEventListener('click', addNewTask)
 backNav.addEventListener('click', goBackToTask)
 // objects
 function Task(taskName='') {
     this.name = taskName
     this.children = []
+    // can not save functions
+    // this.addTask = function(task) {
+    //     this.children.push(task)
+    // }
 }
 
 //functions

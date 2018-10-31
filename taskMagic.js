@@ -30,6 +30,8 @@ taskSearch.addEventListener('keyup', e => {
             return
         }
         updateSearchResults(searchText)
+    } else {
+        redrawTasks()
     }
 })
 addTaskButton.addEventListener('click', addNewTask)
@@ -62,6 +64,29 @@ function saveTasks() {
 
 function rootTask() {
     return previousParents[previousParents.length - 1]
+}
+
+function allTasks() {
+    let allTasks = []
+    rootTask().children.forEach(childTask => {
+        allTasks.push(childTask)
+        allChildren(childTask).forEach(grandchild => {
+            allTasks.push(grandchild)
+        })
+    })
+    allTasks.sort((task1, task2) => task1.name > task2.name)
+    return allTasks
+}
+
+function allChildren(task) {
+    let allChildren = []
+    task.children.forEach(childTask => {
+        allChildren.push(childTask)
+        allChildren(childTask).forEach(grandchild => {
+            allChildren.push(grandchild)
+        })
+    })
+    return allChildren
 }
 
 function drawTask(task) {
@@ -120,7 +145,13 @@ function getSearchTextValue() {
 }
 
 function updateSearchResults(searchText) {
-
+    searchTask.children = allTasks().filter(task => {
+        if (task.name.includes(searchText)) {
+            return true
+        }
+        return false
+    })
+    drawSearchResults()
 }
 
 function drawSearchResults() {

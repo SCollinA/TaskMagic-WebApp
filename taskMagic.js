@@ -10,16 +10,26 @@ const addTaskButton = document.getElementById('addTask')
 // will load parent task from cache later
 let loadedTask = JSON.parse(localStorage.getItem('rootTask'))
 let parentTask = (loadedTask) ? loadedTask : new Task(parentTaskName.textContent)
-let previousParents = []
+let searchTask = new Task('Searching...')
+let previousParents = [parentTask]
 
 // event listeners
-taskSearch.addEventListener('keypress', e => {
-    // const searchText = e.target.value
-    // detect if return key was pressed
+taskSearch.addEventListener('keydown', e => {
     if (e.keyCode == 13) {
-    // if (searchText.length > 0 && searchText[searchText.length - 1] == String.fromCharCode('0x0a')) {
-        addNewTask()
-        // taskSearch.blur() // removes focus
+        e.preventDefault()
+    }
+})
+taskSearch.addEventListener('keyup', e => {
+    // if there is text in taskSearch
+    // update search results
+    const searchText = getSearchTextValue()
+    if (searchText) {
+        // detect if return key was pressed
+        if (e.keyCode == 13) {
+            addNewTask(searchText)
+            return
+        }
+        updateSearchResults(searchText)
     }
 })
 addTaskButton.addEventListener('click', addNewTask)
@@ -37,13 +47,9 @@ function Task(taskName='') {
 //functions
 
 // get a task clone
-function addNewTask() {
-    // don't add an unnamed task
-    if (getSearchTextValue() == '') {
-        return
-    }
+function addNewTask(searchText) {
     // save task to file here
-    parentTask.children.push(new Task(getSearchTextValue()))
+    parentTask.children.push(new Task(searchText))
 
     // update page
     redrawTasks()
@@ -55,11 +61,7 @@ function saveTasks() {
 }
 
 function rootTask() {
-    if (previousParents.length > 0) {
-        return previousParents[previousParents.length - 1]
-    } else {
-        return parentTask
-    }
+    return previousParents[previousParents.length - 1]
 }
 
 function drawTask(task) {
@@ -96,13 +98,9 @@ function redrawTasks() {
     }
 
     // empty tasks div
-    while (tasksDiv.childElementCount > 0) {
-        tasksDiv.firstElementChild.remove()
-    }
+    emptyTasksDiv()
     // add tasks back
-    parentTask.children.forEach(childTask => {
-        drawTask(childTask)
-    })
+    drawChildren(parentTask)
     saveTasks()
 }
 
@@ -121,4 +119,26 @@ function getSearchTextValue() {
     return taskSearch.value
 }
 
+function updateSearchResults(searchText) {
+
+}
+
+function drawSearchResults() {
+    emptyTasksDiv()
+    // add tasks back
+    drawChildren(searchTask)
+}
+
+function drawChildren(task) {
+    task.children.forEach(childTask => {
+        drawTask(childTask)
+    })
+}
+
+function emptyTasksDiv() {
+    // empty tasks div
+    while (tasksDiv.childElementCount > 0) {
+        tasksDiv.firstElementChild.remove()
+    }
+}
 redrawTasks()

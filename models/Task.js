@@ -42,6 +42,16 @@ class Task {
         // return db.any('select * from links where Task_id=$1', [this.id])
         // .then(resultsArray => Promise.all(resultsArray.map(result => User.getById(result.id))))
     }
+
+    getChildren() {
+        return db.any('select t.id, t.name from tasks t join parents_children pc on t.id=pc.child_task_id join tasks on tasks.id=pc.parent_task_id where tasks.id=$1', [this.id])
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+    }
+
+    getParents() {
+        return db.any('select t.id, t.name from tasks t join parents_children pc on t.id=pc.parent_task_id join tasks on tasks.id=pc.child_task_id where tasks.id=$1', [this.id])
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+    }
     
     // update  
     updateName(newName) {

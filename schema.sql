@@ -13,7 +13,7 @@ create table parents_children (
     id serial primary key,
     parent_task_id integer references tasks (id),
     child_task_id integer references tasks (id)
-)
+);
 
 create table users_tasks (
     id serial primary key,

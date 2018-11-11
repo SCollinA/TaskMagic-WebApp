@@ -1,5 +1,5 @@
 insert into tasks 
-(name, completed)
+(name, active)
 values
 ('go shopping', true),
 ('mow lawn', false),

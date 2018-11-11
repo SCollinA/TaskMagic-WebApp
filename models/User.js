@@ -29,29 +29,30 @@ class User {
         .then(resultsArray => resultsArray.map(result => new User(result.id, result.name)))
     }
 
-    getTasks() {
+    getAllTasks() {
         return db.any('select Tasks.id, Tasks.name, Tasks.completed from Tasks join users_Tasks ut on Tasks.id=ut.Task_id join users on ut.user_id=users.id where users.id=$1', [this.id])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }
 
     rootTask() {
-        return db.one(`select root.id, root.name, root.active 
-                        from (select tasks.id, tasks.name, tasks.active, pc.parent_task_id 
-                                from (select Tasks.id, Tasks.name, Tasks.completed 
-                                        from Tasks 
-                                            join 
-                                            users_Tasks ut 
-                                            on Tasks.id=ut.Task_id 
-                                                join 
-                                                users 
-                                                on ut.user_id=users.id 
-                                                where users.id=$1) t 
-                                    join 
-                                    parents_children pc 
-                                    on t.id=pc.parent_task_id 
-                                    right join tasks 
-                                    on tasks.id=pc.child_task_id) as root 
-                        where s.parent_task_id is NULL`, [this.id])
+        return db.one(`select userTasks.id, userTasks.name, userTasks.active
+        from (select t.id, t.name, t.active from tasks t
+                        join
+                      users_tasks ut
+                          on ut.task_id=t.id
+                          where ut.user_id=1) as userTasks
+        join
+        (select ta.id, ta.name, ta.active, allChildren.id as acID 
+                from tasks ta
+                    left join
+                (select tsks.id, tsks.name, tsks.active 
+                     from tasks tsks
+                        join
+                          parents_children pc
+                          on tsks.id=pc.child_task_id) as allChildren
+                on allChildren.id=ta.id
+                where allChildren.id is NULL) as rootTask
+        on userTasks.id=rootTask.id`, [this.id])
         .then(result => new Task(result.id, result.name, result.active))
     }
     

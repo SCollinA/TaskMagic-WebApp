@@ -1,5 +1,3 @@
-window.location = '/taskMagic.html';
-
 const bodyParser = require('body-parser')
 
 const express = require('express')
@@ -16,6 +14,7 @@ const User = require('./models/User')
 
 const taskViewTemplate = require('./views/taskView.js')
 const taskView = taskViewTemplate.taskView
+const headerView = taskViewTemplate.header
 
 
 app.get('/', (req, res) => res.send('Try /userName'))
@@ -24,10 +23,14 @@ app.get('/', (req, res) => res.send('Try /userName'))
 // listen for get requests
 app.get('/:userName([A-Z]+)', (req, res) => {
     User.getByName(req.params.userName)
-    .then(user => {
-        localStorage.setItem(userName, JSON.stringify(user.name))
-        user.rootTask().then(task => {
-            res.send(taskView(task))
+    // .then(console.log)
+    .then(users => {
+        users[0].rootTask().then(task => {
+            task.getChildren()
+            .then(children => {
+                const header = headerView(task)
+                res.send(taskView(header, children))
+            })
         })
     })
 })

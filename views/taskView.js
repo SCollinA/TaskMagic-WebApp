@@ -1,5 +1,7 @@
+let userName
+
 const setUser = function(user) {
-    localStorage.setItem(userName, JSON.stringify(user.name))
+    userName = user.name
 }
 
 const taskView = function(header, children) {
@@ -11,7 +13,7 @@ const taskView = function(header, children) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
-    <link rel="stylesheet" href="stylesheets/taskMagic.css">
+    <link rel="stylesheet" href="/stylesheets/taskMagic.css" type="text/css">
     <title>Document</title>
   </head>
   <body>
@@ -66,14 +68,15 @@ const tasks = function(children) {
 
 const task = function(childTask) {
   return `
-    <div class="task">
+    <a class="task" href="/${userName}/${childTask.id}">
         <h6 class="taskName">${childTask.name}</h6>
         <p class="childTaskName">${childTask.name}</p>
-    </div>
+    </a>
   `
 }
 
 module.exports = {
     taskView,
-    header
+    header,
+    setUser
 }

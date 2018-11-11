@@ -40,7 +40,7 @@ class User {
                         join
                       users_tasks ut
                           on ut.task_id=t.id
-                          where ut.user_id=1) as userTasks
+                          where ut.user_id=$1) as userTasks
         join
         (select ta.id, ta.name, ta.active, allChildren.id as acID 
                 from tasks ta

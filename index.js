@@ -11,10 +11,12 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 const User = require('./models/User')
+const Task = require('./models/Task')
 
 const taskViewTemplate = require('./views/taskView.js')
 const taskView = taskViewTemplate.taskView
 const headerView = taskViewTemplate.header
+const setUser = taskViewTemplate.setUser
 
 
 app.get('/', (req, res) => res.send('Try /userName'))
@@ -29,8 +31,20 @@ app.get('/:userName([A-Z]+)', (req, res) => {
             task.getChildren()
             .then(children => {
                 const header = headerView(task)
+                setUser(users[0])
                 res.send(taskView(header, children))
             })
+        })
+    })
+})
+
+app.get('/:userName([A-Z]+)/:taskID([0-9]+)', (req, res) => {
+    Task.getById(req.params.taskID)
+    .then(task => {
+        task.getChildren()
+        .then(children => {
+            const header = headerView(task)
+            res.send(taskView(header, children))
         })
     })
 })

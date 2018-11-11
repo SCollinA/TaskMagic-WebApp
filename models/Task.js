@@ -2,38 +2,39 @@ const db = require('./db')
 const User = require('./User')
 
 class Task {
-    constructor (id, name, completed) {
+    constructor (id, name, active, children) {
         this.id = id
         this.name = name
-        this.completed = completed
+        this.active = active
+        this.children = children
     }
-    
+
     // create
-    static add(name, completed) {
-        return db.one('insert into Tasks (name, completed) values ($1, $2) returning id', [name, completed])
-        .then(result => new Task(result.id, result.name, result.completed))
+    addChild(name, active) {
+        return db.one('insert into Tasks (name, active) values ($1, $2) returning id', [name, active])
+        .then(result => new Task(result.id, result.name, result.active, result.children))
     }
     
     // retrieve
     static getById(id) {
         return db.one(`select * from Tasks where id=$1`, [id])
-        .then(result => new Task(result.id, result.name, result.completed))
+        .then(result => new Task(result.id, result.name, result.active, result.children))
     }
 
     static getByName(name) {
         return db.any('select * from Tasks where name ilike \'%$1:raw%\'', [name])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.completed)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.children)))
     }
 
-    static getByCompleted(completed) {
-        return db.any('select * from Tasks where completed=$1', [completed])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.completed)))
+    static getByactive(active) {
+        return db.any('select * from Tasks where active=$1', [active])
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.children)))
     }
     
     static getAll() {
         return db.any('select * from Tasks')
         // .then(resultsArray => Promise.all(resultsArray.map(result => Task.getById(result.id))))
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.completed)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.children)))
     }
 
     getUsers() {
@@ -58,9 +59,9 @@ class Task {
         return db.result('delete from users_Tasks where user_id=$1 and Task_id=$2', [user_id, this.id])
     }
 
-    toggleComplete() {
-        this.completed = !this.completed
-        return db.result('update Tasks set completed=$1 where id=$2', [this.completed, this.id])
+    toggleActive() {
+        this.active = !this.active
+        return db.result('update Tasks set active=$1 where id=$2', [this.active, this.id])
     }
 
     // delete

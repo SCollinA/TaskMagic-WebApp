@@ -1,24 +1,29 @@
+const Task = require('../models/Task')
 
 // elements from the page
 const body = document.querySelector('body')
-const parentTaskName = document.getElementById('parentTaskName')
+const currentParentTaskName = document.getElementById('currentParentTaskName')
 const backNav = document.getElementById('backNav')
 const taskSearch = document.getElementById('taskSearch')
 const tasksDiv = document.querySelector('div.tasks')
 const taskCellPrototype = tasksDiv.firstElementChild.cloneNode(true)
 const addTaskButton = document.getElementById('addTask')
-// will load parent task from cache later
-let loadedTask = JSON.parse(localStorage.getItem('rootTask'))
-let parentTask = (loadedTask) ? loadedTask : new Task(parentTaskName.textContent)
+
+
 let searchTask = new Task('Searching...')
 let previousParents = []
+let currentParentTask = function() {
+    return previousParents[previousParents.length - 1]
+}
 
 // event listeners
+//prevent newline on return in textarea
 taskSearch.addEventListener('keydown', e => {
     if (e.keyCode == 13) {
         e.preventDefault()
     }
 })
+// add new task on return in textarea
 taskSearch.addEventListener('keyup', e => {
     // if there is text in taskSearch
     // update search results
@@ -36,37 +41,22 @@ taskSearch.addEventListener('keyup', e => {
 })
 addTaskButton.addEventListener('click', addNewTask)
 backNav.addEventListener('click', goBackToTask)
-// objects
-function Task(taskName='') {
-    this.name = taskName
-    this.children = []
-    // can not save functions
-    // this.addTask = function(task) {
-    //     this.children.push(task)
-    // }
-}
-
 //functions
 
-// get a task clone
 function addNewTask(searchText) {
-    // save task to file here
-    parentTask.children.push(new Task(searchText))
+    // create the new task
+    currentParentTask.addChild(searchText, true, [])
 
     // update page
     redrawTasks()
     taskSearch.value = ''
 }
 
-function saveTasks() {
-    localStorage.setItem('rootTask', JSON.stringify(rootTask()))
-}
-
 function rootTask() {
     if (previousParents.length > 0) {
         return previousParents[previousParents.length - 1]
     } else {
-        return parentTask
+        return currentParentTask
     }
 }
 
@@ -105,7 +95,7 @@ function drawTask(task) {
         const taskDiv = event.target
         const taskName = taskDiv.firstElementChild.textContent
         let selectedTask
-        parentTask.children.forEach(childTask => {
+        currentParentTask.children.forEach(childTask => {
             if (childTask.name === taskName) {
                 selectedTask = childTask
             }
@@ -116,7 +106,7 @@ function drawTask(task) {
 }
 
 function redrawTasks() {
-    parentTaskName.textContent = parentTask.name
+    currentParentTaskName.textContent = currentParentTask.name
     
     // remove back button if necessary
     if (!previousParents.length > 0) {
@@ -129,18 +119,18 @@ function redrawTasks() {
     // empty tasks div
     emptyTasksDiv()
     // add tasks back
-    drawChildren(parentTask)
+    drawChildren(currentParentTask)
     saveTasks()
 }
 
 function selectTask(task) {
-    previousParents.unshift(parentTask)
-    parentTask = task
+    previousParents.unshift(currentParentTask)
+    currentParentTask = task
     redrawTasks()
 }
 
 function goBackToTask() {
-    parentTask = previousParents.shift()
+    currentParentTask = previousParents.shift()
     redrawTasks()
 }
 

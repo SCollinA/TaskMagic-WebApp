@@ -15,6 +15,13 @@ values
 ('Whatshisname'),
 ('Whatshername');
 
+insert into children_parents
+(parent_task_id, child_task_id)
+values
+(1, 2),
+(1, 3),
+(4, 3);
+
 insert into users_tasks
 (user_id, task_id)
 values

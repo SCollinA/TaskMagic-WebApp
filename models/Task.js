@@ -6,35 +6,34 @@ class Task {
         this.id = id
         this.name = name
         this.active = active
-        this.children = children
     }
 
     // create
-    addChild(name, active) {
+    static add(name, active) {
         return db.one('insert into Tasks (name, active) values ($1, $2) returning id', [name, active])
-        .then(result => new Task(result.id, result.name, result.active, result.children))
+        .then(result => new Task(result.id, result.name, result.active))
     }
     
     // retrieve
     static getById(id) {
         return db.one(`select * from Tasks where id=$1`, [id])
-        .then(result => new Task(result.id, result.name, result.active, result.children))
+        .then(result => new Task(result.id, result.name, result.active))
     }
 
     static getByName(name) {
         return db.any('select * from Tasks where name ilike \'%$1:raw%\'', [name])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.children)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }
 
     static getByactive(active) {
         return db.any('select * from Tasks where active=$1', [active])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.children)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }
     
     static getAll() {
         return db.any('select * from Tasks')
         // .then(resultsArray => Promise.all(resultsArray.map(result => Task.getById(result.id))))
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.children)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }
 
     getUsers() {
@@ -43,7 +42,7 @@ class Task {
         // return db.any('select * from links where Task_id=$1', [this.id])
         // .then(resultsArray => Promise.all(resultsArray.map(result => User.getById(result.id))))
     }
-
+    
     // update  
     updateName(newName) {
         this.name = newName
@@ -64,9 +63,18 @@ class Task {
         return db.result('update Tasks set active=$1 where id=$2', [this.active, this.id])
     }
 
+    addChild(task) {
+        return db.result('insert into children_parents (parent_task_id, child_task_id) values ($1, $2)', [this.id, task.id])
+    }
+
+    removeChild(task) {
+        return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [this.id, task.id])
+    }
+
     // delete
     delete() {
         return db.result('delete from users_Tasks where Task_id=$1', [this.id])
+        .then(() => db.result(`delete from parents_children where parent_task_id=$1 or child_task_id=$1`, [this.id]))
         .then(() => db.result(`delete from Tasks where id=$1`, [this.id]))
     }
 

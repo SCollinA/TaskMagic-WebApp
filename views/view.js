@@ -14,7 +14,7 @@ const page = function(tasks) {
     ${header(Task.previousTasks[Task.previousTasks.length - 1])}
     ${tasks(tasks)}
     ${toolbar()}
-    <script src="views/taskMagic.js"></script>
+    <script src="views/viewController.js"></script>
   </body>
 </html>
 `}

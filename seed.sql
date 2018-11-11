@@ -15,7 +15,7 @@ values
 ('Whatshisname'),
 ('Whatshername');
 
-insert into children_parents
+insert into parents_children
 (parent_task_id, child_task_id)
 values
 (1, 2),

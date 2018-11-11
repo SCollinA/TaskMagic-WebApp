@@ -45,7 +45,7 @@ backNav.addEventListener('click', goBackToTask)
 
 function addNewTask(searchText) {
     // create the new task
-    currentParentTask.addChild(searchText, true, [])
+    currentParentTask.addChild(Task.add(searchText, true))
 
     // update page
     redrawTasks()

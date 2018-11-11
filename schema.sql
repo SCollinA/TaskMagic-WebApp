@@ -9,10 +9,10 @@ create table tasks (
     active boolean
 );
 
-create table children_parents (
+create table parents_children (
     id serial primary key,
-    child_task_id integer references tasks (id),
-    parent_task_id integer references tasks (id)
+    parent_task_id integer references tasks (id),
+    child_task_id integer references tasks (id)
 )
 
 create table users_tasks (

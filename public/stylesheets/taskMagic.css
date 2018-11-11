@@ -42,7 +42,7 @@ html, body {
     border-radius: 1em;
 }
 
-.parentTask {
+.currentTask {
     background-color: coral;
     padding: 2%;
     min-width: 50%;

@@ -2,15 +2,15 @@ const db = require('./db')
 const User = require('./User')
 
 class Task {
-    constructor (id, name, active, children) {
+    constructor (id, name, active) {
         this.id = id
         this.name = name
         this.active = active
     }
 
     // create
-    static add(name, active) {
-        return db.one('insert into Tasks (name, active) values ($1, $2) returning id', [name, active])
+    static add(name) {
+        return db.one('insert into Tasks (name, active) values ($1, $2) returning id', [name, true])
         .then(result => new Task(result.id, result.name, result.active))
     }
     
@@ -25,7 +25,7 @@ class Task {
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }
 
-    static getByactive(active) {
+    static getByActive(active) {
         return db.any('select * from Tasks where active=$1', [active])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }

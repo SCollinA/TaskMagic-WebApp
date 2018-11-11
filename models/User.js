@@ -31,9 +31,28 @@ class User {
 
     getTasks() {
         return db.any('select Tasks.id, Tasks.name, Tasks.completed from Tasks join users_Tasks ut on Tasks.id=ut.Task_id join users on ut.user_id=users.id where users.id=$1', [this.id])
-        .then(resultsArray => resultsArray.map(result => new User(result.id, result.name)))
-        // return db.any('select * from Tasks where user_id=$1', [this.id])
-        // .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.completed, result.user_id)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+    }
+
+    rootTask() {
+        return db.one(`select root.id, root.name, root.active 
+                        from (select tasks.id, tasks.name, tasks.active, pc.parent_task_id 
+                                from (select Tasks.id, Tasks.name, Tasks.completed 
+                                        from Tasks 
+                                            join 
+                                            users_Tasks ut 
+                                            on Tasks.id=ut.Task_id 
+                                                join 
+                                                users 
+                                                on ut.user_id=users.id 
+                                                where users.id=$1) t 
+                                    join 
+                                    parents_children pc 
+                                    on t.id=pc.parent_task_id 
+                                    right join tasks 
+                                    on tasks.id=pc.child_task_id) as root 
+                        where s.parent_task_id is NULL`, [this.id])
+        .then(result => new Task(result.id, result.name, result.active))
     }
     
     // Update

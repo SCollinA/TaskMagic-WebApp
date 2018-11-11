@@ -1,21 +1,20 @@
 const Task = require('../models/Task')
-
+const User = require('../models/User')
 // elements from the page
 const body = document.querySelector('body')
-const currentParentTaskName = document.getElementById('currentParentTaskName')
+const currentTaskName = document.getElementById('currentTaskName')
 const backNav = document.getElementById('backNav')
 const taskSearch = document.getElementById('taskSearch')
 const tasksDiv = document.querySelector('div.tasks')
 const taskCellPrototype = tasksDiv.firstElementChild.cloneNode(true)
 const addTaskButton = document.getElementById('addTask')
 
+const currentUserName = localStorage.getItem(userName)
+const currentUser = User.getByName(currentUserName)
 
-let searchTask = new Task('Searching...')
-let previousParents = []
-let currentParentTask = function() {
-    return previousParents[previousParents.length - 1]
-}
-
+const currentTask = Task.getByName(currentTaskName.textContent)
+const previousParents = []
+const searchTask = new Task('Searching...')
 // event listeners
 //prevent newline on return in textarea
 taskSearch.addEventListener('keydown', e => {
@@ -24,63 +23,26 @@ taskSearch.addEventListener('keydown', e => {
     }
 })
 // add new task on return in textarea
-taskSearch.addEventListener('keyup', e => {
+taskSearch.addEventListener('keyup', addNewTask)
+addTaskButton.addEventListener('click', addNewTask)
+backNav.addEventListener('click', goBackToTask)
+//functions
+
+function addNewTask(event) {
     // if there is text in taskSearch
     // update search results
     const searchText = getSearchTextValue()
     if (searchText) {
         // detect if return key was pressed
         if (e.keyCode == 13) {
-            addNewTask(searchText)
+            Task.add(searchText)
+            .then(task => currentTask.addChild(task))
             return
         }
         updateSearchResults(searchText)
     } else {
         redrawTasks()
     }
-})
-addTaskButton.addEventListener('click', addNewTask)
-backNav.addEventListener('click', goBackToTask)
-//functions
-
-function addNewTask(searchText) {
-    // create the new task
-    currentParentTask.addChild(Task.add(searchText, true))
-
-    // update page
-    redrawTasks()
-    taskSearch.value = ''
-}
-
-function rootTask() {
-    if (previousParents.length > 0) {
-        return previousParents[previousParents.length - 1]
-    } else {
-        return currentParentTask
-    }
-}
-
-function getAllTasks() {
-    let allTasks = []
-    rootTask().children.forEach(childTask => {
-        allTasks.push(childTask)
-        getAllChildren(childTask).forEach(grandchild => {
-            allTasks.push(grandchild)
-        })
-    })
-    allTasks.sort((task1, task2) => task1.name > task2.name)
-    return allTasks
-}
-
-function getAllChildren(task) {
-    let allChildren = []
-    task.children.forEach(childTask => {
-        allChildren.push(childTask)
-        getAllChildren(childTask).forEach(grandchild => {
-            allChildren.push(grandchild)
-        })
-    })
-    return allChildren
 }
 
 function drawTask(task) {
@@ -90,15 +52,21 @@ function drawTask(task) {
     // no children to add to new task, so remove all text
     let newTaskChildrensNames = newTask.lastElementChild
     newTaskName.textContent = task.name
-    newTaskChildrensNames.textContent = task.children.map(childTask => childTask.name).join(', ')
+    task.getChildren()
+    .then(children => {
+        newTaskChildrensNames.textContent = children.map(childTask => childTask.name).join(', ')
+    })
     newTask.addEventListener('click', event => {
         const taskDiv = event.target
         const taskName = taskDiv.firstElementChild.textContent
         let selectedTask
-        currentParentTask.children.forEach(childTask => {
-            if (childTask.name === taskName) {
-                selectedTask = childTask
-            }
+        currentTask.getChildren()
+        .then(children => {
+            children.forEach(childTask => {
+                if (childTask.name === taskName) {
+                    selectedTask = childTask
+                }
+            })
         })
         selectTask(selectedTask)
     })
@@ -119,18 +87,17 @@ function redrawTasks() {
     // empty tasks div
     emptyTasksDiv()
     // add tasks back
-    drawChildren(currentParentTask)
-    saveTasks()
+    drawChildren(currentTask)
 }
 
 function selectTask(task) {
-    previousParents.unshift(currentParentTask)
-    currentParentTask = task
+    previousParents.unshift(currentTask)
+    currentTask = task
     redrawTasks()
 }
 
 function goBackToTask() {
-    currentParentTask = previousParents.shift()
+    currentTask = previousParents.shift()
     redrawTasks()
 }
 
@@ -162,8 +129,11 @@ function drawSearchResults() {
 }
 
 function drawChildren(task) {
-    task.children.forEach(childTask => {
+    task.getChildren()
+    .then(children => {
+        children.forEach(childTask => {
         drawTask(childTask)
+        })
     })
 }
 

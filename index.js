@@ -34,8 +34,9 @@ app.get('/user/:userName([A-Z | %20]+)', (req, res) => {
             task.getChildren()
             .then(children => {
                 currentTask = task
-                const header = headerView(task, previousTasks[0])
-                res.send(taskView(header, children))
+                res.redirect(`/task/${task.name}`)
+                // const header = headerView(task, previousTasks[0])
+                // res.send(taskView(header, children))
             })
         })
     })
@@ -46,10 +47,11 @@ app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
     .then(tasks => {
         tasks[0].getChildren()
         .then(children => {
-            if (!previousTasks.map(task => task.id).includes(tasks[0].id)) {
+            // if we are not at a previous task already
+            if (currentTask.id != tasks[0].id && !previousTasks.map(task => task.id).includes(tasks[0].id)) {
                 previousTasks.unshift(currentTask)
                 console.log(previousTasks)
-            } else {
+            } else if (previousTasks.length > 0 && tasks[0].id == previousTasks[0].id) {
                 previousTasks.shift()
                 console.log(previousTasks)
             }
@@ -61,15 +63,15 @@ app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
     })
 })
 
-app.post('/task/:taskName([A-Z | %20]+)', (req, res) => {
-    Task.add(req.params.taskName)
+app.post("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
+    // console.log(req.body)
+    Task.add(req.body.taskSearch)
     .then(task => {
         task.assignToUser(currentUser.id)
         .then(() => {
             currentTask.addChild(task)
             // task.addParent(currentTask)
             .then(() => {
-                debugger
                 res.redirect(`/task/${currentTask.name}`)
             })
         })

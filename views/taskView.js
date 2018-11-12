@@ -36,9 +36,9 @@ const header = function(currentTask, prevTask) {
                 <h2 id="currentTaskName">${currentTask.name}</h2>
             </div>
         </div>
-        <div class="searchbar">
+        <form name="taskSearchForm" class="searchbar" method="post">
             <textarea name="taskSearch" id="taskSearch" cols="10" rows="0" wrap="off" maxlength="200"></textarea>
-        </div>
+        </form>
     </div>
     `
 }

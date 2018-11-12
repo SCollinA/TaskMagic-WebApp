@@ -5,6 +5,7 @@ const body = document.querySelector('body')
 const currentTaskName = document.getElementById('currentTaskName')
 const backNav = document.getElementById('backNav')
 const taskSearch = document.getElementById('taskSearch')
+const taskSearchForm = document.getElementById('taskSearchForm')
 const tasksDiv = document.querySelector('div.tasks')
 const tasks = document.querySelectorAll('a.task')
 const addTaskButton = document.getElementById('addTask')
@@ -34,14 +35,7 @@ function addNewTask(e) {
         // detect if return key was pressed
         if (e.keyCode == 13) {
             // needs to send post request to server
-
-            fetch(`/task/${searchText}`,
-            {
-                method: 'POST',
-                body: {
-                    taskName: searchText,    
-                },
-            })
+            document.taskSearchForm.submit()
             return
         }
         updateSearchResults(searchText)

@@ -61,4 +61,19 @@ app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
     })
 })
 
+app.post('/task/:taskName([A-Z | %20]+)', (req, res) => {
+    Task.add(req.params.taskName)
+    .then(task => {
+        task.assignToUser(currentUser.id)
+        .then(() => {
+            currentTask.addChild(task)
+            // task.addParent(currentTask)
+            .then(() => {
+                debugger
+                res.redirect(`/task/${currentTask.name}`)
+            })
+        })
+    })
+})
+
 app.listen(port, () => console.log(`My Task App listening on port ${port}!`))

@@ -35,8 +35,13 @@ function addNewTask(e) {
         if (e.keyCode == 13) {
             // needs to send post request to server
 
-            Task.add(searchText)
-            .then(task => currentTask.addChild(task))
+            fetch(`/task/${searchText}`,
+            {
+                method: 'POST',
+                body: {
+                    taskName: searchText,    
+                },
+            })
             return
         }
         updateSearchResults(searchText)

@@ -11,7 +11,8 @@ class Task {
     // create
     static add(name) {
         return db.one('insert into Tasks (name, active) values ($1, $2) returning id', [name, true])
-        .then(result => new Task(result.id, result.name, result.active))
+        .then(result => Task.getById(result.id))
+        // .then(result => new Task(result.id, name, true))
     }
     
     // retrieve
@@ -73,8 +74,16 @@ class Task {
         return db.result('update Tasks set active=$1 where id=$2', [this.active, this.id])
     }
 
+    // addParent(parentTask) {
+    //     return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [parentTask.id, this.id])
+    // }
+
+    // removeParent(parentTask) {
+    //     return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [parentTask.id, this.id])
+    // }
+
     addChild(task) {
-        return db.result('insert into children_parents (parent_task_id, child_task_id) values ($1, $2)', [this.id, task.id])
+        return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, task.id])
     }
 
     removeChild(task) {

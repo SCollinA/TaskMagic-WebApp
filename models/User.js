@@ -15,7 +15,7 @@ class User {
     
     // Retrieve
     static getById(id) {
-        return db.one('select * from users where id=$1', [id])
+        return db.one('select * from users where id=$1:raw', [id])
         .then(result => new User(result.id, result.name))
     }
 

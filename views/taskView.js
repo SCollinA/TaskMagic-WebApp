@@ -29,7 +29,7 @@ const header = function(currentTask, prevTask) {
             <h4>
         </div>
         <div class="navHeader">
-            <a id="backNav" href="/task/${prevTask.name}">
+            <a id="backNav" href="/task/${prevTask.id}">
                 <h4>${prevTask.name}</h4>
             </a>
             <div class="currentTask">
@@ -70,7 +70,7 @@ const taskCell = function(childTask) {
     .then(children => children.map(child => child.name).join(', '))
     .then(childNames => {
         return `
-        <a class="task" href="">
+        <a class="task" href="/task/${childTask.id}">
             <h6 class="taskName">${childTask.name}</h6>
             <p class="childTaskName">${childNames}</p>
         </a>

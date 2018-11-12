@@ -21,10 +21,10 @@ taskSearch.addEventListener('keydown', e => {
 taskSearch.addEventListener('keyup', addNewTask)
 addTaskButton.addEventListener('click', addNewTask)
 // backNav.setAttribute('href', `/task/`)
-tasks.forEach(task => {
-    const taskName = task.firstElementChild.textContent
-    task.setAttribute('href', `/task/${taskName}`)
-})
+// tasks.forEach(task => {
+//     const taskName = task.firstElementChild.textContent
+//     task.setAttribute('href', `/task/${taskName}`)
+// })
 //functions
 
 function addNewTask(e) {

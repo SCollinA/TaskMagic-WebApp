@@ -26,39 +26,39 @@ app.get('/', (req, res) => res.send('Whaaaaa?'))
 
 // define endpoints
 // listen for get requests
-app.get('/user/:userName([A-Z | %20]+)', (req, res) => {
-    User.getByName(req.params.userName)
+app.get('/user/:userID([0-9]+)', (req, res) => {
+    User.getById(req.params.userID)
     // .then(console.log)
-    .then(users => {
-        currentUser = users[0]
-        users[0].rootTask().then(task => {
+    .then(user => {
+        currentUser = user
+        user.rootTask().then(task => {
             currentTask = task
-            res.redirect(`/task/${task.name}`)
+            res.redirect(`/task/${task.id}`)
             // const header = headerView(task, previousTasks[0])
             // res.send(taskView(header, children))
         })
     })
 })
 
-app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
-    Task.getByName(req.params.taskName)
-    .then(tasks => {
-        tasks[0].getChildren()
+app.get("/task/:taskID([0-9]+)", (req, res) => {
+    Task.getById(req.params.taskID)
+    .then(task => {
+        task.getChildren()
         .then(children => {
             if (!currentTask) {
-                currentTask = tasks[0]
+                currentTask = task
             }
             // if we are not at a previous task already
-            if (currentTask.id != tasks[0].id && !previousTasks.map(task => task.id).includes(tasks[0].id)) {
+            if (currentTask.id != task.id && !previousTasks.map(prevTask => prevTask.id).includes(task.id)) {
                 previousTasks.unshift(currentTask)
                 console.log(previousTasks)
-            } else if (previousTasks.length > 0 && tasks[0].id == previousTasks[0].id) {
+            } else if (previousTasks.length > 0 && task.id == previousTasks[0].id) {
                 previousTasks.shift()
                 console.log(previousTasks)
             }
-            currentTask = tasks[0]
+            currentTask = task
             console.log(currentTask)
-            const header = headerView(tasks[0], previousTasks[0])
+            const header = headerView(task, previousTasks[0])
             createTaskCells(children)
             .then(taskCells => res.send(taskView(header, taskCells)))
         })

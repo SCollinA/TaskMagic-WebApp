@@ -65,7 +65,7 @@ app.get("/task/:taskID([0-9]+)", (req, res) => {
     })
 })
 
-app.post("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
+app.post("/task/:parentTaskID([0-9]+)", (req, res) => {
     // console.log(req.body)
     if (currentUser) { // if a user is logged in
         Task.add(req.body.taskSearch)
@@ -75,7 +75,7 @@ app.post("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
                 currentTask.addChild(task)
                 // task.addParent(currentTask)
                 .then(() => {
-                    res.redirect(`/task/${currentTask.name}`)
+                    res.redirect(`/task/${currentTask.id}`)
                 })
             })
         })

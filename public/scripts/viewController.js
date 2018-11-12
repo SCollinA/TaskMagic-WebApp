@@ -33,7 +33,7 @@ function addNewTask(e) {
     const searchText = getSearchTextValue()
     if (searchText) {
         // detect if return key was pressed
-        if (e.keyCode == 13) {
+        if (e.keyCode == 13 || e.target.parentElement.id == 'addTask') {
             // needs to send post request to server
             document.taskSearchForm.submit()
             return
@@ -77,16 +77,16 @@ function getSearchTextValue() {
 }
 
 function updateSearchResults(searchText) {
-    currentUser.getAllTasks()
-    .then(tasks => {
-        tasks.filter(task => {
-            if (task.name.includes(searchText)) {
-                return true
-            }
-            return false
-        }).forEach(task => searchTask.addChild(task))
-        .then(() => drawSearchResults())
-    })
+    // currentUser.getAllTasks()
+    // .then(tasks => {
+    //     tasks.filter(task => {
+    //         if (task.name.includes(searchText)) {
+    //             return true
+    //         }
+    //         return false
+    //     }).forEach(task => searchTask.addChild(task))
+    //     .then(() => drawSearchResults())
+    // })
 }
 
 function drawSearchResults() {

@@ -55,7 +55,6 @@ const toolbar = function() {
 
 const tasks = function(children) {
    let taskNames = children.map(task).join('')
-   debugger
 
    return `
     <div class="tasks">

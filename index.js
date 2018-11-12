@@ -21,11 +21,11 @@ let currentUser
 let currentTask
 let previousTasks = []
 
-app.get('/', (req, res) => res.send('Try /userName'))
+app.get('/', (req, res) => res.send('Whaaaaa?'))
 
 // define endpoints
 // listen for get requests
-app.get('/user/:userName([A-Z]+)', (req, res) => {
+app.get('/user/:userName([A-Z | %20]+)', (req, res) => {
     User.getByName(req.params.userName)
     // .then(console.log)
     .then(users => {
@@ -46,14 +46,15 @@ app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
     .then(tasks => {
         tasks[0].getChildren()
         .then(children => {
-            if (previousTasks.includes(currentTask)) {
-                currentTask = previousTasks.shift()
-                console.log(previousTasks)
-            } else if (currentTask.id != tasks[0].id) {
+            if (!previousTasks.map(task => task.id).includes(tasks[0].id)) {
                 previousTasks.unshift(currentTask)
-                currentTask = tasks[0]
+                console.log(previousTasks)
+            } else {
+                previousTasks.shift()
                 console.log(previousTasks)
             }
+            currentTask = tasks[0]
+            console.log(currentTask)
             const header = headerView(tasks[0], previousTasks[0])
             res.send(taskView(header, children))
         })

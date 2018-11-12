@@ -1,10 +1,5 @@
-let userName
-
-const setUser = function(user) {
-    userName = user.name
-}
-
 const taskView = function(header, children) {
+    // <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -12,7 +7,6 @@ const taskView = function(header, children) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
     <link rel="stylesheet" href="/stylesheets/taskMagic.css" type="text/css">
     <title>Document</title>
   </head>
@@ -20,7 +14,7 @@ const taskView = function(header, children) {
     ${header}
     ${tasks(children)}
     ${toolbar()}
-    <script src="scripts/viewController.js"></script>
+    <script src="/scripts/viewController.js"></script>
   </body>
 </html>
 `}
@@ -68,7 +62,7 @@ const tasks = function(children) {
 
 const task = function(childTask) {
   return `
-    <a class="task" href="/${userName}/${childTask.id}">
+    <a class="task" href="">
         <h6 class="taskName">${childTask.name}</h6>
         <p class="childTaskName">${childTask.name}</p>
     </a>
@@ -78,5 +72,4 @@ const task = function(childTask) {
 module.exports = {
     taskView,
     header,
-    setUser
 }

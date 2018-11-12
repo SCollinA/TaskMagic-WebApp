@@ -23,7 +23,7 @@ app.get('/', (req, res) => res.send('Try /userName'))
 
 // define endpoints
 // listen for get requests
-app.get('/:userName([A-Z]+)', (req, res) => {
+app.get('/user/:userName([A-Z]+)', (req, res) => {
     User.getByName(req.params.userName)
     // .then(console.log)
     .then(users => {
@@ -31,19 +31,19 @@ app.get('/:userName([A-Z]+)', (req, res) => {
             task.getChildren()
             .then(children => {
                 const header = headerView(task)
-                setUser(users[0])
                 res.send(taskView(header, children))
             })
         })
     })
 })
 
-app.get('/:userName([A-Z]+)/:taskID([0-9]+)', (req, res) => {
-    Task.getById(req.params.taskID)
-    .then(task => {
-        task.getChildren()
+app.get('/task/:taskName([A-Z | %20]+)', (req, res) => {
+    debugger
+    Task.getByName(req.params.taskName)
+    .then(tasks => {
+        tasks[0].getChildren()
         .then(children => {
-            const header = headerView(task)
+            const header = headerView(tasks[0])
             res.send(taskView(header, children))
         })
     })

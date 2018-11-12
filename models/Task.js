@@ -44,7 +44,7 @@ class Task {
     }
 
     getChildren() {
-        return db.any('select t.id, t.name from tasks t join parents_children pc on t.id=pc.child_task_id join tasks on tasks.id=pc.parent_task_id where tasks.id=$1', [this.id])
+        return db.any('select t.id, t.name, t.active from tasks t join parents_children pc on t.id=pc.child_task_id join tasks on tasks.id=pc.parent_task_id where tasks.id=$1', [this.id])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }
 

@@ -1,4 +1,4 @@
-const taskView = function(header, children) {
+const taskView = function(header, tasks) {
     // <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
     return `
 <!DOCTYPE html>
@@ -12,7 +12,7 @@ const taskView = function(header, children) {
   </head>
   <body>
     ${header}
-    ${tasks(children)}
+    ${tasks}
     ${toolbar()}
     <script src="/scripts/viewController.js"></script>
   </body>
@@ -53,26 +53,33 @@ const toolbar = function() {
     `
 }
 
-const tasks = function(children) {
-   let taskNames = children.map(task).join('')
-
-   return `
-    <div class="tasks">
-        ${taskNames}
-    </div>
-   `
+const taskCells = function(children) {
+    return Promise.all(children.map(taskCell))
+    .then(taskElements => {
+       let taskElementsString = taskElements.join('')
+       return `
+       <div class="tasks">
+            ${taskElementsString}
+       </div>
+       `
+    })
 }
 
-const task = function(childTask) {
-  return `
-    <a class="task" href="">
-        <h6 class="taskName">${childTask.name}</h6>
-        <p class="childTaskName">${childTask.name}</p>
-    </a>
-  `
+const taskCell = function(childTask) {
+    return childTask.getChildren()
+    .then(children => children.map(child => child.name).join(', '))
+    .then(childNames => {
+        return `
+        <a class="task" href="">
+            <h6 class="taskName">${childTask.name}</h6>
+            <p class="childTaskName">${childNames}</p>
+        </a>
+        `
+    })
 }
 
 module.exports = {
     taskView,
     header,
+    taskCells,
 }

@@ -16,6 +16,7 @@ const Task = require('./models/Task')
 const taskViewTemplate = require('./views/taskView.js')
 const taskView = taskViewTemplate.taskView
 const headerView = taskViewTemplate.header
+const createTaskCells = taskViewTemplate.taskCells
 
 let currentUser
 let currentTask
@@ -31,13 +32,10 @@ app.get('/user/:userName([A-Z | %20]+)', (req, res) => {
     .then(users => {
         currentUser = users[0]
         users[0].rootTask().then(task => {
-            task.getChildren()
-            .then(children => {
-                currentTask = task
-                res.redirect(`/task/${task.name}`)
-                // const header = headerView(task, previousTasks[0])
-                // res.send(taskView(header, children))
-            })
+            currentTask = task
+            res.redirect(`/task/${task.name}`)
+            // const header = headerView(task, previousTasks[0])
+            // res.send(taskView(header, children))
         })
     })
 })
@@ -61,7 +59,8 @@ app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
             currentTask = tasks[0]
             console.log(currentTask)
             const header = headerView(tasks[0], previousTasks[0])
-            res.send(taskView(header, children))
+            createTaskCells(children)
+            .then(taskCells => res.send(taskView(header, taskCells)))
         })
     })
 })

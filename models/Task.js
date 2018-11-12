@@ -21,7 +21,7 @@ class Task {
     }
 
     static getByName(name) {
-        return db.any('select * from Tasks where name ilike \'%$1:raw%\'', [name])
+        return db.any('select * from Tasks where name ilike \'%$1:value%\'', [name])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }
 

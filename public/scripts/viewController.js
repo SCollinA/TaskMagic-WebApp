@@ -19,7 +19,7 @@ taskSearch.addEventListener('keydown', e => {
 // add new task on return in textarea
 taskSearch.addEventListener('keyup', addNewTask)
 addTaskButton.addEventListener('click', addNewTask)
-backNav.setAttribute('href', `/task/`)
+// backNav.setAttribute('href', `/task/`)
 tasks.forEach(task => {
     const taskName = task.firstElementChild.textContent
     task.setAttribute('href', `/task/${taskName}`)

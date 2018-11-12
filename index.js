@@ -41,7 +41,7 @@ app.get('/user/:userName([A-Z]+)', (req, res) => {
     })
 })
 
-app.get('/task/:taskName([A-Z | %20]+)', (req, res) => {
+app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
     Task.getByName(req.params.taskName)
     .then(tasks => {
         tasks[0].getChildren()

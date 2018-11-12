@@ -68,17 +68,21 @@ app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
 
 app.post("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
     // console.log(req.body)
-    Task.add(req.body.taskSearch)
-    .then(task => {
-        task.assignToUser(currentUser.id)
-        .then(() => {
-            currentTask.addChild(task)
-            // task.addParent(currentTask)
+    if (currentUser) { // if a user is logged in
+        Task.add(req.body.taskSearch)
+        .then(task => {
+            task.assignToUser(currentUser.id)
             .then(() => {
-                res.redirect(`/task/${currentTask.name}`)
+                currentTask.addChild(task)
+                // task.addParent(currentTask)
+                .then(() => {
+                    res.redirect(`/task/${currentTask.name}`)
+                })
             })
         })
-    })
+    } else {
+        res.send('Not logged in...')
+    }
 })
 
 app.listen(port, () => console.log(`My Task App listening on port ${port}!`))

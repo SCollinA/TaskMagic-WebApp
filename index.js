@@ -48,9 +48,11 @@ app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
         .then(children => {
             if (previousTasks.includes(currentTask)) {
                 currentTask = previousTasks.shift()
-            } else {
+                console.log(previousTasks)
+            } else if (currentTask.id != tasks[0].id) {
                 previousTasks.unshift(currentTask)
                 currentTask = tasks[0]
+                console.log(previousTasks)
             }
             const header = headerView(tasks[0], previousTasks[0])
             res.send(taskView(header, children))

@@ -48,7 +48,7 @@ function addNewTask(e) {
 function redrawTasks() {
     
     // remove back button if necessary
-    if (backNav.firstElementChild.textContent == '') {
+    if (backNav.firstElementChild.textContent == 'undefined') {
         backNav.style.visibility = 'hidden'
     } else {
         backNav.style.visibility = 'visible'
@@ -60,11 +60,11 @@ function redrawTasks() {
     // drawChildren(currentTask)
 }
 
-function selectTask(task) {
-    previousParents.unshift(currentTask)
-    currentTask = task
-    redrawTasks()
-}
+// function selectTask(task) {
+//     previousParents.unshift(currentTask)
+//     currentTask = task
+//     redrawTasks()
+// }
 
 function isSearching() {
     if (getSearchTextValue()) {

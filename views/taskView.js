@@ -20,13 +20,16 @@ const taskView = function(header, children) {
 `}
 
 const header = function(currentTask, prevTask) {
+    if (!prevTask) {
+        prevTask = {name: 'undefined'}
+    }
     return `
     <div class="header">
         <div class="userName">
             <h4>
         </div>
         <div class="navHeader">
-            <a id="backNav" href="/task/${prevTask.name}">
+            <a id="backNav" href=\'/task/${prevTask.name}\'>
                 <h4>${prevTask.name}</h4>
             </a>
             <div class="currentTask">
@@ -52,7 +55,8 @@ const toolbar = function() {
 
 const tasks = function(children) {
    let taskNames = children.map(task).join('')
-  
+   debugger
+
    return `
     <div class="tasks">
         ${taskNames}

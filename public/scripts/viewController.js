@@ -46,20 +46,18 @@ function addNewTask(e) {
 }
 
 function redrawTasks() {
-    currentParentTaskName.textContent = currentParentTask.name
     
     // remove back button if necessary
-    if (!previousParents.length > 0) {
+    if (backNav.firstElementChild.textContent == '') {
         backNav.style.visibility = 'hidden'
     } else {
         backNav.style.visibility = 'visible'
-        backNav.textContent = previousParents[0].name
     }
 
-    // empty tasks div
-    emptyTasksDiv()
-    // add tasks back
-    drawChildren(currentTask)
+    // // empty tasks div
+    // emptyTasksDiv()
+    // // add tasks back
+    // drawChildren(currentTask)
 }
 
 function selectTask(task) {

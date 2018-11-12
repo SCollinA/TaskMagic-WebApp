@@ -16,8 +16,10 @@ const Task = require('./models/Task')
 const taskViewTemplate = require('./views/taskView.js')
 const taskView = taskViewTemplate.taskView
 const headerView = taskViewTemplate.header
-const setUser = taskViewTemplate.setUser
 
+let currentUser
+let currentTask
+let previousTasks = []
 
 app.get('/', (req, res) => res.send('Try /userName'))
 
@@ -27,10 +29,12 @@ app.get('/user/:userName([A-Z]+)', (req, res) => {
     User.getByName(req.params.userName)
     // .then(console.log)
     .then(users => {
+        currentUser = users[0]
         users[0].rootTask().then(task => {
             task.getChildren()
             .then(children => {
-                const header = headerView(task)
+                currentTask = task
+                const header = headerView(task, previousTasks[0])
                 res.send(taskView(header, children))
             })
         })
@@ -38,12 +42,17 @@ app.get('/user/:userName([A-Z]+)', (req, res) => {
 })
 
 app.get('/task/:taskName([A-Z | %20]+)', (req, res) => {
-    debugger
     Task.getByName(req.params.taskName)
     .then(tasks => {
         tasks[0].getChildren()
         .then(children => {
-            const header = headerView(tasks[0])
+            if (previousTasks.includes(currentTask)) {
+                currentTask = previousTasks.shift()
+            } else {
+                previousTasks.unshift(currentTask)
+                currentTask = tasks[0]
+            }
+            const header = headerView(tasks[0], previousTasks[0])
             res.send(taskView(header, children))
         })
     })

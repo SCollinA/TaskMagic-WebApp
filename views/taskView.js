@@ -19,16 +19,16 @@ const taskView = function(header, children) {
 </html>
 `}
 
-const header = function(currentTask) {
+const header = function(currentTask, prevTask) {
     return `
     <div class="header">
         <div class="userName">
             <h4>
         </div>
         <div class="navHeader">
-            <div id="backNav">
-                <h4>< Grandparent Task</h4>
-            </div>
+            <a id="backNav" href="/task/${prevTask.name}">
+                <h4>${prevTask.name}</h4>
+            </a>
             <div class="currentTask">
                 <h2 id="currentTaskName">${currentTask.name}</h2>
             </div>

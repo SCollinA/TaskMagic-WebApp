@@ -19,7 +19,7 @@ taskSearch.addEventListener('keydown', e => {
 // add new task on return in textarea
 taskSearch.addEventListener('keyup', addNewTask)
 addTaskButton.addEventListener('click', addNewTask)
-backNav.addEventListener('click', goBackToTask)
+backNav.setAttribute('href', `/task/`)
 tasks.forEach(task => {
     const taskName = task.firstElementChild.textContent
     task.setAttribute('href', `/task/${taskName}`)
@@ -65,11 +65,6 @@ function redrawTasks() {
 function selectTask(task) {
     previousParents.unshift(currentTask)
     currentTask = task
-    redrawTasks()
-}
-
-function goBackToTask() {
-    currentTask = previousParents.shift()
     redrawTasks()
 }
 

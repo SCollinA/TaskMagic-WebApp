@@ -47,6 +47,9 @@ app.get("/task/:taskName([A-Z | %20 | ']+)", (req, res) => {
     .then(tasks => {
         tasks[0].getChildren()
         .then(children => {
+            if (!currentTask) {
+                currentTask = tasks[0]
+            }
             // if we are not at a previous task already
             if (currentTask.id != tasks[0].id && !previousTasks.map(task => task.id).includes(tasks[0].id)) {
                 previousTasks.unshift(currentTask)

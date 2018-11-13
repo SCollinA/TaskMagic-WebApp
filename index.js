@@ -6,6 +6,17 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
+const db = require('./models/db');
+app.use(session({
+    store: new pgSession({
+        pgPromise: db
+    }),
+    secret: 'random123',
+    saveUninitialized: false
+}));
+
 app.use(express.static('public'))
 
 app.use(bodyParser.urlencoded({extended: false}))

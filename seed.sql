@@ -19,8 +19,8 @@ values
 insert into users
 (name, pwhash)
 values
-('collin', 'hello'),
-('hallie', 'pumpkin');
+('collin', '$2b$10$fSgsCMP09txXoeKRY2qAbO3XbEv/rcvbhmZ88N1LTrnwqyETxj.Pq'),
+('hallie', '$2b$10$b6eYPITqCXvCF6kSrUVls.F48/NIjunEd/RmkAKJml1a7lFSo8IxC');
 
 insert into parents_children
 (parent_task_id, child_task_id)

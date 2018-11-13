@@ -22,21 +22,21 @@ class User {
     // Retrieve
     static getById(id) {
         return db.one('select * from users where id=$1:raw', [id])
-        .then(result => new User(result.id, result.name))
+        .then(result => new User(result.id, result.name, result.pwhash))
     }
 
     static getByName(name) {
         return db.one('select * from users where name=\'$1:raw\'', [name])
-        .then(result => new User(result.id, result.name))
+        .then(result => new User(result.id, result.name, result.pwhash))
     }
 
     matchPassword(password) {
-        return bcrypt.compareSync(password, user.pwhash)
+        return bcrypt.compareSync(password, this.pwhash)
     }
     
     static getAll() {
         return db.any('select * from users')
-        .then(resultsArray => resultsArray.map(result => new User(result.id, result.name)))
+        .then(resultsArray => resultsArray.map(result => new User(result.id, result.name, result.pwhash)))
     }
 
     getAllTasks() {

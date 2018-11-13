@@ -25,15 +25,17 @@ const header = function(currentTask, prevTask) {
     }
     return `
     <div class="header">
-        <div class="userName">
-            <h4>
-        </div>
         <div class="navHeader">
             <a id="backNav" href="/task/${prevTask.id}">
                 <h4>${prevTask.name}</h4>
             </a>
             <div class="currentTask">
                 <h2 id="currentTaskName">${currentTask.name}</h2>
+            </div>
+            <div>
+                <form action="/logout" method="post">
+                    <input type="submit" value="logout">
+                </form>
             </div>
         </div>
         <form name="taskSearchForm" class="searchbar" method="post">

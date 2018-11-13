@@ -47,6 +47,7 @@ app.post('/login', (req, res) => {
     // find user
     User.getByName(userName)
     .then(user => {
+        debugger
         if (user.matchPassword(password)) {
             req.session.user = user
             res.redirect(`/user/${user.id}`)
@@ -54,6 +55,11 @@ app.post('/login', (req, res) => {
             res.redirect('/login');
         }
     })
+})
+app.post('/logout', (req, res) => {
+    req.session.destroy()
+
+    res.redirect('/login')
 })
 
 app.get('/register', (req, res) => {
@@ -73,7 +79,6 @@ app.post('/register', (req, res) => {
             .then(() => res.redirect(`/user/${user.id}`))
         })
     })
-    // res.redirect('/register')
 })
 // define endpoints
 // listen for get requests

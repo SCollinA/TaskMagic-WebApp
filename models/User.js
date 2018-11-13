@@ -8,7 +8,7 @@ class User {
     constructor(id, name, pwhash) {
         this.id = id
         this.name = name
-        this.pwhash = pwhash;        
+        this.pwhash = pwhash       
     }
 
     // Create
@@ -40,7 +40,7 @@ class User {
     }
 
     getAllTasks() {
-        return db.any('select Tasks.id, Tasks.name, Tasks.completed from Tasks join users_Tasks ut on Tasks.id=ut.Task_id join users on ut.user_id=users.id where users.id=$1', [this.id])
+        return db.any('select Tasks.id, Tasks.name, Tasks.active from Tasks join users_Tasks ut on Tasks.id=ut.Task_id join users on ut.user_id=users.id where users.id=$1', [this.id])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
     }
 

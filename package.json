@@ -17,7 +17,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "debug": "node --inspect-brk index.js",
-    "reset-db": "dropdb task-magic-db; createdb task-magic-db; psql -f schema.sql task-magic-db; psql -f seed.sql task-magic-db;"
+    "reset-db": "dropdb task-magic-db; createdb task-magic-db; psql -f schema.sql task-magic-db; psql -f seed.sql task-magic-db; psql task-magic-db < node_modules/connect-pg-simple/table.sql;"
   },
   "repository": {
     "type": "git",

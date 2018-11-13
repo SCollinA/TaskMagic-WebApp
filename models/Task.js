@@ -38,8 +38,9 @@ class Task {
     }
 
     getUsers() {
+        debugger
         return db.any('select users.id, users.name from users join users_Tasks ut on users.id=ut.user_id join Tasks on ut.Task_id=Tasks.id where Tasks.id=$1', [this.id])
-        .then(resultsArray => resultsArray.map(result => new User(result.id, result.name)))
+        .then(resultsArray => resultsArray.map(result => new User(result.id, result.name, result.pwhash)))
         // return db.any('select * from links where Task_id=$1', [this.id])
         // .then(resultsArray => Promise.all(resultsArray.map(result => User.getById(result.id))))
     }

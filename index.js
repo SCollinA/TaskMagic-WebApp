@@ -101,25 +101,28 @@ app.get('/user/:userID([0-9]+)', (req, res) => {
 app.get("/task/:taskID([0-9]+)", (req, res) => {
     Task.getById(req.params.taskID)
     .then(task => {
-        task.getChildren()
-        .then(children => {
-            if (!currentTask) {
-                currentTask = task
-            }
-            // if we are not at a previous task already
-            if (currentTask.id != task.id && !previousTasks.map(prevTask => prevTask.id).includes(task.id)) {
-                previousTasks.unshift(currentTask)
-                console.log(previousTasks)
-            } else if (previousTasks.length > 0 && task.id == previousTasks[0].id) {
-                previousTasks.shift()
-                console.log(previousTasks)
-            }
-            currentTask = task
-            console.log(currentTask)
-            const header = headerView(task, previousTasks[0])
-            createTaskCells(children)
-            .then(taskCells => res.send(taskView(header, taskCells)))
-        })
+        task.getUsers()
+        .then(users => users.includes(req.session.user))
+        .then(console.log)
+        // task.getChildren()
+        // .then(children => {
+        //     if (!currentTask) {
+        //         currentTask = task
+        //     }
+        //     // if we are not at a previous task already
+        //     if (currentTask.id != task.id && !previousTasks.map(prevTask => prevTask.id).includes(task.id)) {
+        //         previousTasks.unshift(currentTask)
+        //         console.log(previousTasks)
+        //     } else if (previousTasks.length > 0 && task.id == previousTasks[0].id) {
+        //         previousTasks.shift()
+        //         console.log(previousTasks)
+        //     }
+        //     currentTask = task
+        //     console.log(currentTask)
+        //     const header = headerView(task, previousTasks[0])
+        //     createTaskCells(children)
+        //     .then(taskCells => res.send(taskView(header, taskCells)))
+        // })
     })
 })
 

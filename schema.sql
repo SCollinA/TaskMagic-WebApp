@@ -1,6 +1,6 @@
 create table users (
     id serial primary key,
-    name text,
+    name varchar(60) unique not null,
     pwhash varchar(60) not null
 );
 

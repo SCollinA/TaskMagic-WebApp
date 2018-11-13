@@ -19,8 +19,8 @@ values
 insert into users
 (name)
 values
-('Collin'),
-('Hallie');
+('collin'),
+('hallie');
 
 insert into parents_children
 (parent_task_id, child_task_id)

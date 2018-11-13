@@ -33,12 +33,12 @@ app.get('/login', (req, res) => {
 })
 app.post('/login', (req, res) => {
     // get values from form
-    const userName = req.body.username
+    const userName = req.body.username.toLowerCase()
     const password = req.body.password
     // find user
     User.getByName(userName)
-    .catch(err => res.redirect('/login'))
     .then(user => {
+        console.log(user)
         // check password
         if (user.length == 0) {
             res.redirect('/login')

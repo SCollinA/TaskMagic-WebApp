@@ -3,6 +3,8 @@ nodemon
 pg-promise
 express
 postgres
+connect-pg-simple
+express-session
 
 brew
 node

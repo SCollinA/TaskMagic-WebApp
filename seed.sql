@@ -17,10 +17,10 @@ values
 ('hallie''s life', true);
 
 insert into users
-(name)
+(name, pwhash)
 values
-('collin'),
-('hallie');
+('collin', 'hello'),
+('hallie', 'pumpkin');
 
 insert into parents_children
 (parent_task_id, child_task_id)

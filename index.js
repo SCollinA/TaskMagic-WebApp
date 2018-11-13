@@ -1,7 +1,5 @@
 const bodyParser = require('body-parser')
 
-const bcrypt = require('bcrypt')
-
 const express = require('express')
 const app = express()
 const port = 3000
@@ -49,12 +47,10 @@ app.post('/login', (req, res) => {
     // find user
     User.getByName(userName)
     .then(user => {
-        console.log(user)
-        // check password
-        if (user.length == 0) {
-            res.redirect('/login')
-        } else {
+        if (user.matchPassword(password)) {
             res.redirect(`/user/${user.id}`)
+        } else {
+            res.redirect('/login');
         }
     })
 })
@@ -67,7 +63,7 @@ app.post('/register', (req, res) => {
     const userName = req.body.username.toLowerCase()
     const password = req.body.password
     // create user
-    User.add(userName)
+    User.add(userName, password)
     .then(user => {
         Task.add(`${userName}'s life`)
         .then(task => {

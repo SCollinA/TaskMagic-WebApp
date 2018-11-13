@@ -1,16 +1,23 @@
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
 const db = require('./db')
 const Task = require('./Task')
+
 
 class User {
     constructor(id, name) {
         this.id = id
         this.name = name
+        this.pwhash = pwhash;        
     }
 
     // Create
-    static add(name) {
-        return db.one('insert into users (name) values ($1) returning id', [name])
-        .then(result => new User(result.id, result.name))
+    static add(name, password) {
+        const salt = bcrypt.genSaltSync(saltRounds);
+        const pwhash = bcrypt.hashSync(password, salt)
+        console.log(pwhash)
+        return db.one('insert into users (name, pwhash) values ($1, $2) returning id', [name, pwhash])
+        .then(result => new User(result.id, name, pwhash))
     }
     
     // Retrieve
@@ -22,6 +29,10 @@ class User {
     static getByName(name) {
         return db.one('select * from users where name=\'$1:raw\'', [name])
         .then(result => new User(result.id, result.name))
+    }
+
+    matchPassword(password) {
+        return bcrypt.compareSync(password, user.pwhash)
     }
     
     static getAll() {

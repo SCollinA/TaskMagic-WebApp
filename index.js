@@ -40,7 +40,11 @@ app.post('/login', (req, res) => {
     .catch(err => res.redirect('/login'))
     .then(user => {
         // check password
-        
+        if (user.length == 0) {
+            res.redirect('/login')
+        } else {
+            res.redirect(`/user/${user.id}`)
+        }
     })
 })
 
@@ -48,7 +52,19 @@ app.get('/register', (req, res) => {
     res.send(registerView())
 })
 app.post('/register', (req, res) => {
-    
+    // get values
+    const userName = req.body.username.toLowerCase()
+    const password = req.body.password
+    // create user
+    User.add(userName)
+    .then(user => {
+        Task.add(`${userName}'s life`)
+        .then(task => {
+            task.assignToUser(user.id)
+            .then(() => res.redirect(`/user/${user.id}`))
+        })
+    })
+    // res.redirect('/register')
 })
 // define endpoints
 // listen for get requests

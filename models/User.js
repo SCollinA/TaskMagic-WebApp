@@ -5,7 +5,7 @@ const Task = require('./Task')
 
 
 class User {
-    constructor(id, name) {
+    constructor(id, name, pwhash) {
         this.id = id
         this.name = name
         this.pwhash = pwhash;        
@@ -19,7 +19,6 @@ class User {
         return db.one('insert into users (name, pwhash) values ($1, $2) returning id', [name, pwhash])
         .then(result => new User(result.id, name, pwhash))
     }
-    
     // Retrieve
     static getById(id) {
         return db.one('select * from users where id=$1:raw', [id])

@@ -48,6 +48,7 @@ app.post('/login', (req, res) => {
     User.getByName(userName)
     .then(user => {
         if (user.matchPassword(password)) {
+            req.session.user = user
             res.redirect(`/user/${user.id}`)
         } else {
             res.redirect('/login');

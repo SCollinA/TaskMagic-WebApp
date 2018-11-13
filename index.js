@@ -1,6 +1,6 @@
 const bodyParser = require('body-parser')
 
-// const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt')
 
 const express = require('express')
 const app = express()
@@ -26,7 +26,23 @@ let currentUser
 let currentTask
 let previousTasks = []
 
-app.get('/', (req, res) => res.send('Whaaaaa?'))
+app.get('/', (req, res) => res.redirect('/login'))
+
+app.get('/login', (req, res) => {
+    res.send(loginView())
+})
+app.post('/login', (req, res) => {
+    // get values from form
+    const userName = req.body.username
+    const password = req.body.password
+    // find user
+    User.getByName(userName)
+    .catch(err => res.redirect('/login'))
+    .then(user => {
+        // check password
+        
+    })
+})
 
 app.get('/register', (req, res) => {
     res.send(registerView())
@@ -34,16 +50,6 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
     
 })
-
-app.get('/login', (req, res) => {
-    res.send(loginView())
-})
-app.post('/login', (req, res) => {
-    // get values from form
-    // find user
-    // check password
-})
-
 // define endpoints
 // listen for get requests
 app.get('/user/:userID([0-9]+)', (req, res) => {

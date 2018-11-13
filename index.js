@@ -66,6 +66,7 @@ app.post('/register', (req, res) => {
     // create user
     User.add(userName, password)
     .then(user => {
+        req.session.user = user
         Task.add(`${userName}'s life`)
         .then(task => {
             task.assignToUser(user.id)

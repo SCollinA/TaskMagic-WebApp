@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt')
-const saltRounds = 10;
+const saltRounds = 10
 const db = require('./db')
 const Task = require('./Task')
 

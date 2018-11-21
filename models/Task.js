@@ -1,5 +1,4 @@
 const db = require('./db')
-const User = require('./User')
 
 class Task {
     constructor(id, name, active) {
@@ -38,13 +37,11 @@ class Task {
     }
 
     getUsers() {
-        console.log(User)
-        debugger
+        const User = require('./User')
+
         return db.any('select users.id, users.name, users.pwhash from users join users_Tasks ut on users.id=ut.user_id join Tasks on ut.Task_id=Tasks.id where Tasks.id=$1', [this.id])
         .then(resultsArray => resultsArray.map(result => new User(result.id, result.name, result.pwhash)))
-        .catch(() => {
-            debugger
-        })
+
         // return db.any('select * from links where Task_id=$1', [this.id])
         // .then(resultsArray => Promise.all(resultsArray.map(result => User.getById(result.id))))
     }
@@ -106,7 +103,6 @@ class Task {
         return db.result('delete from users_Tasks where Task_id=$1', [id])
         .then(() => db.result(`delete from Tasks where id=$1`, [id]))
     }
-
 }
 
 module.exports = Task

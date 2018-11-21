@@ -99,7 +99,6 @@ app.get('/home', protectRoute, (req, res) => {
         .then(rootTask => {
             req.session.task = rootTask
             req.session.previousTasks = []
-            console.log(req.session.previousTasks)
             res.redirect('/')
         })
     })
@@ -115,6 +114,7 @@ app.get('/', protectRoute, checkTask, (req, res) => {
         .then(children => {
             taskCells(children)
             .then(taskCells => {
+                console.log(`Sending task view ${req.session.task.name}`)
                 res.send(taskView(taskNav, taskCells))
             })
         })
@@ -124,6 +124,7 @@ app.get('/', protectRoute, checkTask, (req, res) => {
 app.get('/back', protectRoute, (req, res) => {
     req.session.task = req.session.previousTasks.pop()
     console.log(req.session.previousTasks)
+    console.log(`Going back to ${req.session.task.name}`)
     res.redirect('/')
 })
 // doing the task magic
@@ -134,6 +135,7 @@ app.get("/:taskID([0-9]+)", protectRoute, (req, res) => {
         req.session.previousTasks.push(req.session.task)
         console.log(req.session.previousTasks)
         req.session.task = task
+        console.log(`Task selected: ${task.name}`)
         res.redirect('/')
     })
 })

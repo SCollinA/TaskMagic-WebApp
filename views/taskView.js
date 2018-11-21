@@ -25,7 +25,7 @@ const header = function(currentTask, prevTask) {
     return `
     <div class="header">
         <div class="navHeader">
-            <a id="backNav" href="/task/${prevTask.id}">
+            <a id="backNav" href="/${prevTask.id}">
                 <h4>${prevTask.name}</h4>
             </a>
             <div class="currentTask">

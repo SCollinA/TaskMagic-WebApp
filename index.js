@@ -40,7 +40,14 @@ function protectRoute(req, res, next) {
     }
 }
 
-let previousTasks = []
+function checkTask(req, res, next) {
+    debugger
+    if (req.session.task) {
+        next()
+    } else {
+        res.redirect('/login')
+    }
+}
 
 app.get('/login', (req, res) => {
     res.send(loginView())
@@ -92,32 +99,25 @@ app.get('/home', protectRoute, (req, res) => {
         user.rootTask()
         .then(rootTask => {
             req.session.task = rootTask
-            previousTasks.length = 0
+            req.session.previousTasks = []
             res.redirect('/')
         })
     })
 })
 // define endpoints
 // listen for get requests
-app.get('/', protectRoute, (req, res) => {    // check if they have a current task assigned
-    // otherwise they navigated here while already signed in
-    if (!req.session.task) {
-        res.redirect('/home')
-    } else {
-        const header = headerView(req.session.task, previousTasks[0])
-        Task.getById(req.session.task.id)
-        .then(task => {
-            task.getChildren()
-            .then(children => {
-                debugger
-                taskCells(children)
-                .then(taskCells => {
-                    debugger
-                    res.send(taskView(header, taskCells))
-                })
+app.get('/', protectRoute, checkTask, (req, res) => { 
+    const header = headerView(req.session.task, req.session.previousTasks[0])
+    Task.getById(req.session.task.id)
+    .then(task => {
+        task.getChildren()
+        .then(children => {
+            taskCells(children)
+            .then(taskCells => {
+                res.send(taskView(header, taskCells))
             })
         })
-    }
+    })
 })
 
 
@@ -125,12 +125,12 @@ app.get('/', protectRoute, (req, res) => {    // check if they have a current ta
 app.get("/:taskID([0-9]+)", protectRoute, (req, res) => {
     Task.getById(req.params.taskID)
     .then(task => {
-        if (previousTasks.map(task => task.id).includes(req.session.task.id)) {
-            while (previousTasks.pop().id != req.session.task.id) {
+        if (req.session.previousTasks.map(task => task.id).includes(req.session.task.id)) {
+            while (req.session.previousTasks.pop().id != req.session.task.id) {
                 continue
             }
         }
-        previousTasks.push(req.session.task)
+        req.session.previousTasks.push(req.session.task)
         req.session.task = task
         res.redirect('/')
     })
@@ -143,8 +143,8 @@ app.post("/", protectRoute, (req, res) => {
         task.assignToUser(req.session.user.id)
         .then(() => {
             Task.getById(req.session.task.id)
-            .then(task => {
-                task.addChild(task)
+            .then(parentTask => {
+                parentTask.addChild(task)
                 .then(() => {
                     res.redirect(`/`)
                 })

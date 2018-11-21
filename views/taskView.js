@@ -71,7 +71,7 @@ const taskCell = function(childTask) {
     .then(children => children.map(child => child.name).join(', '))
     .then(childNames => {
         return `
-        <a class="task" href="/task/${childTask.id}">
+        <a class="task" href="/${childTask.id}">
             <h6 class="taskName">${childTask.name}</h6>
             <p class="childTaskName">${childNames}</p>
         </a>

@@ -64,7 +64,7 @@ app.post('/login', (req, res) => {
     .then(user => {
         if (user.matchPassword(password)) {
             req.session.user = user
-            res.redirect(`/`)
+            res.redirect(`/home`)
         } else {
             res.redirect('/login');
         }
@@ -72,7 +72,6 @@ app.post('/login', (req, res) => {
 })
 app.post('/logout', (req, res) => {
     req.session.destroy()
-
     res.redirect('/login')
 })
 
@@ -91,87 +90,54 @@ app.post('/register', (req, res) => {
         Task.add(`${userName}'s life`)
         .then(task => {
             task.assignToUser(user.id)
-            .then(() => res.redirect(`/`))
+            .then(() => res.redirect(`/home`))
+        })
+    })
+})
+
+app.get('/home', protectRoute, (req, res) => {
+    const user = req.session.user
+    User.getById(user.id)
+    .then(user => {
+        user.rootTask()
+        .then(rootTask => {
+            currentTask = rootTask
+            previousTasks.length = 0
+            res.redirect('/')
         })
     })
 })
 // define endpoints
 // listen for get requests
 app.get('/', protectRoute, (req, res) => {
-    User.getById(req.session.user.id)
-    // .then(console.log)
-    .then(user => {
-        currentUser = user
-        user.rootTask().then(task => {
-            currentTask = task
-            task.getUsers()
-            .then(() => {
-                // if this task has current logged in user assigned to it
-                // if (users.map(user => user.id).includes(req.session.user.id)) {
-                task.getChildren()
-                .then(children => {
-                    if (!currentTask) {
-                        currentTask = task
-                    }   
-                    // if we are not at a previous task already
-                    if (currentTask.id != task.id && !previousTasks.map(prevTask => prevTask.id).includes(task.id)) {
-                        previousTasks.unshift(currentTask)
-                        console.log(previousTasks)
-                    } else if (previousTasks.length > 0 && task.id == previousTasks[0].id) {
-                        previousTasks.shift()
-                        console.log(previousTasks)
-                    }
-                    currentTask = task
-                    console.log(currentTask)
-                    const header = headerView(task, previousTasks[0])
-                    taskCells(children)
-                    .then(taskCells => res.send(taskView(header, taskCells)))
-                })
-                // } else {
-                //     res.redirect('/login')
-                // }
-            })
-            // res.redirect(`/task/${task.id}`)
-            // const header = headerView(task, previousTasks[0])
-            // res.send(taskView(header, children))
-        })
+    debugger
+    // check if they have a current task assigned
+    // otherwise they navigated here while already signed in
+    if (!currentTask) {
+        res.redirect('/home')
+    }
+    const header = headerView(currentTask, previousTasks[0])
+    currentTask.getChildren(children => {
+        taskCells(children)
+        .then(taskCells => res.send(taskView(header, taskCells)))
     })
 })
 
 
 // doing the task managing sutff
-// app.get("/task/:taskID([0-9]+)", (req, res) => {
-//     Task.getById(req.params.taskID)
-//     .then(task => {
-//         task.getUsers()
-//         .then(users => {
-//             // if this task has current logged in user assigned to it
-//             if (users.map(user => user.id).includes(req.session.user.id)) {
-//                 task.getChildren()
-//                 .then(children => {
-//                     if (!currentTask) {
-//                         currentTask = task
-//                     }
-//                     // if we are not at a previous task already
-//                     if (currentTask.id != task.id && !previousTasks.map(prevTask => prevTask.id).includes(task.id)) {
-//                         previousTasks.unshift(currentTask)
-//                         console.log(previousTasks)
-//                     } else if (previousTasks.length > 0 && task.id == previousTasks[0].id) {
-//                         previousTasks.shift()
-//                         console.log(previousTasks)
-//                     }
-//                     currentTask = task
-//                     console.log(currentTask)
-//                     const header = headerView(task, previousTasks[0])
-//                     createTaskCells(children)
-//                     .then(taskCells => res.send(taskView(header, taskCells)))
-//                 })
-//             } else {
-//                 res.redirect('/login')
-//             }
-//         })
-//     })
-// })
+app.get("/:taskID([0-9]+)", protectRoute, (req, res) => {
+    Task.getById(req.params.taskID)
+    .then(task => {
+        if (previousTasks.map(task => task.id).includes(currentTask.id)) {
+            while (previousTasks.pop().id != currentTask.id) {
+                continue
+            }
+        }
+        previousTasks.push(currentTask)
+        currentTask = task
+        res.redirect('/')
+    })
+})
 
 app.post("/", protectRoute, (req, res) => {
     // console.log(req.body)

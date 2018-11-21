@@ -40,12 +40,6 @@ function protectRoute(req, res, next) {
     }
 }
 
-app.use((req, res, next) => {
-    const isLoggedIn = req.session.user ? true : false
-    console.log(isLoggedIn)
-    next()
-})
-
 let previousTasks = []
 
 app.get('/login', (req, res) => {
@@ -105,21 +99,25 @@ app.get('/home', protectRoute, (req, res) => {
 })
 // define endpoints
 // listen for get requests
-app.get('/', protectRoute, (req, res) => {
-    debugger
-    // check if they have a current task assigned
+app.get('/', protectRoute, (req, res) => {    // check if they have a current task assigned
     // otherwise they navigated here while already signed in
     if (!req.session.task) {
         res.redirect('/home')
-    }
-    const header = headerView(req.session.task, previousTasks[0])
-    Task.getById(req.session.task.id)
-    .then(task => {
-        task.getChildren(children => {
-            taskCells(children)
-            .then(taskCells => res.send(taskView(header, taskCells)))
+    } else {
+        const header = headerView(req.session.task, previousTasks[0])
+        Task.getById(req.session.task.id)
+        .then(task => {
+            task.getChildren()
+            .then(children => {
+                debugger
+                taskCells(children)
+                .then(taskCells => {
+                    debugger
+                    res.send(taskView(header, taskCells))
+                })
+            })
         })
-    })
+    }
 })
 
 

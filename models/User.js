@@ -3,7 +3,6 @@ const saltRounds = 10;
 const db = require('./db')
 const Task = require('./Task')
 
-
 class User {
     constructor(id, name, pwhash) {
         this.id = id

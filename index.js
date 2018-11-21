@@ -82,7 +82,7 @@ app.post('/register', (req, res) => {
     const password = req.body.password
     // create user
     User.add(userName, password)
-    .catch(() => res.redirect('/login'))
+    .catch(() => res.redirect('/register'))
     .then(user => {
         req.session.user = user
         Task.add(`${userName}'s life`)

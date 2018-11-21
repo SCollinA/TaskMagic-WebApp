@@ -41,7 +41,7 @@ function protectRoute(req, res, next) {
 }
 
 function checkTask(req, res, next) {
-    debugger
+    // if they do not have task there is nothing to show them
     if (req.session.task) {
         next()
     } else {
@@ -67,6 +67,7 @@ app.post('/login', (req, res) => {
         }
     })
 })
+
 app.post('/logout', (req, res) => {
     req.session.destroy()
     res.redirect('/login')
@@ -100,14 +101,16 @@ app.get('/home', protectRoute, (req, res) => {
         .then(rootTask => {
             req.session.task = rootTask
             req.session.previousTasks = []
+            console.log(req.session.previousTasks)
             res.redirect('/')
         })
     })
 })
 // define endpoints
 // listen for get requests
+// main page
 app.get('/', protectRoute, checkTask, (req, res) => { 
-    const header = headerView(req.session.task, req.session.previousTasks[0])
+    const header = headerView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
     Task.getById(req.session.task.id)
     .then(task => {
         task.getChildren()
@@ -120,22 +123,24 @@ app.get('/', protectRoute, checkTask, (req, res) => {
     })
 })
 
-
-// doing the task managing sutff
+app.get('/back', protectRoute, (req, res) => {
+    req.session.task = req.session.previousTasks.pop()
+    console.log(req.session.previousTasks)
+    res.redirect('/')
+})
+// doing the task magic
+// getting the task
 app.get("/:taskID([0-9]+)", protectRoute, (req, res) => {
     Task.getById(req.params.taskID)
     .then(task => {
-        if (req.session.previousTasks.map(task => task.id).includes(req.session.task.id)) {
-            while (req.session.previousTasks.pop().id != req.session.task.id) {
-                continue
-            }
-        }
         req.session.previousTasks.push(req.session.task)
+        console.log(req.session.previousTasks)
         req.session.task = task
         res.redirect('/')
     })
 })
 
+// adds a new task to user's list
 app.post("/", protectRoute, (req, res) => {
     // console.log(req.body)
     Task.add(req.body.taskSearch)

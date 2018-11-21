@@ -31,7 +31,7 @@ function registerForm() {
       <br>
       <input type="submit" value="register">
   </form>    
-  `;
+  `
 }
 
-module.exports = registerView;
+module.exports = registerView

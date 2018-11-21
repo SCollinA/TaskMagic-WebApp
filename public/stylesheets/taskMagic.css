@@ -15,6 +15,10 @@ html, body {
     margin: 0;
 }
 
+a {
+    text-decoration-line: none;
+}
+
 .header {
     display: flex;
     flex-direction: column;
@@ -85,7 +89,7 @@ html, body {
     justify-content: space-between;
     padding: 2% 5%;
     margin: 2% 5%;
-    background-color: cornflowerblue;
+    background-color: goldenrod;
     border-radius: 1em;
 }
 

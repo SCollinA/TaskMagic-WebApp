@@ -1,13 +1,11 @@
 const User = require('./models/User')
 const Task = require('./models/Task')
 
-const taskViewTemplate = require('./views/taskView.js')
-const taskView = taskViewTemplate.taskView
-const headerView = taskViewTemplate.header
-const taskCells = taskViewTemplate.taskCells
+const taskView = require('./views/taskView')
+const taskNavView = require('./views/taskNav')
+const taskCells = require('./views/taskCells')
 const loginView = require('./views/loginView')
 const registerView = require('./views/registerView')
-
 
 const bodyParser = require('body-parser')
 
@@ -110,14 +108,14 @@ app.get('/home', protectRoute, (req, res) => {
 // listen for get requests
 // main page
 app.get('/', protectRoute, checkTask, (req, res) => { 
-    const header = headerView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
+    const taskNav = taskNavView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
     Task.getById(req.session.task.id)
     .then(task => {
         task.getChildren()
         .then(children => {
             taskCells(children)
             .then(taskCells => {
-                res.send(taskView(header, taskCells))
+                res.send(taskView(taskNav, taskCells))
             })
         })
     })

@@ -110,6 +110,7 @@ app.get('/', protectRoute, checkTask, (req, res) => {
     const taskNav = taskNavView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
     Task.getById(req.session.task.id)
     .then(task => {
+        // need to get active children separately from complete tasks
         task.getChildren()
         .then(children => {
             taskCells(children)
@@ -155,6 +156,14 @@ app.post("/", protectRoute, (req, res) => {
                 })
             })
         })
+    })
+})
+
+app.get('/complete/:taskID([0-9]+)', (req, res) => {
+    Task.getById(req.params.taskID)
+    .then(task => {
+        task.toggleActive()
+        .then(() => res.redirect('/'))
     })
 })
 

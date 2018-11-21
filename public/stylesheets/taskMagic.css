@@ -84,7 +84,13 @@ a {
     overflow-y: scroll;
 }
 
+.taskCell {
+    display: flex;
+    padding-right: 1%;
+}
+
 .task {
+    flex: 1;
     display: flex;
     justify-content: space-between;
     padding: 2% 5%;
@@ -101,6 +107,14 @@ a {
 .task > p {
     font-size: .5em;
     margin: auto 0;
+}
+
+.taskComplete {
+    width: 40px;
+    height: 40px;
+    background-color: greenyellow;
+    margin: auto;
+    border-radius: 15px;
 }
 
 .toolbar {

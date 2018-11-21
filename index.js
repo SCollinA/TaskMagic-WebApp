@@ -46,11 +46,7 @@ app.use((req, res, next) => {
     next()
 })
 
-let currentUser
-let currentTask
 let previousTasks = []
-
-// app.get('/', (req, res) => res.redirect('/login'))
 
 app.get('/login', (req, res) => {
     res.send(loginView())
@@ -101,7 +97,7 @@ app.get('/home', protectRoute, (req, res) => {
     .then(user => {
         user.rootTask()
         .then(rootTask => {
-            currentTask = rootTask
+            req.session.task = rootTask
             previousTasks.length = 0
             res.redirect('/')
         })
@@ -113,13 +109,16 @@ app.get('/', protectRoute, (req, res) => {
     debugger
     // check if they have a current task assigned
     // otherwise they navigated here while already signed in
-    if (!currentTask) {
+    if (!req.session.task) {
         res.redirect('/home')
     }
-    const header = headerView(currentTask, previousTasks[0])
-    currentTask.getChildren(children => {
-        taskCells(children)
-        .then(taskCells => res.send(taskView(header, taskCells)))
+    const header = headerView(req.session.task, previousTasks[0])
+    Task.getById(req.session.task.id)
+    .then(task => {
+        task.getChildren(children => {
+            taskCells(children)
+            .then(taskCells => res.send(taskView(header, taskCells)))
+        })
     })
 })
 
@@ -128,13 +127,13 @@ app.get('/', protectRoute, (req, res) => {
 app.get("/:taskID([0-9]+)", protectRoute, (req, res) => {
     Task.getById(req.params.taskID)
     .then(task => {
-        if (previousTasks.map(task => task.id).includes(currentTask.id)) {
-            while (previousTasks.pop().id != currentTask.id) {
+        if (previousTasks.map(task => task.id).includes(req.session.task.id)) {
+            while (previousTasks.pop().id != req.session.task.id) {
                 continue
             }
         }
-        previousTasks.push(currentTask)
-        currentTask = task
+        previousTasks.push(req.session.task)
+        req.session.task = task
         res.redirect('/')
     })
 })
@@ -143,12 +142,14 @@ app.post("/", protectRoute, (req, res) => {
     // console.log(req.body)
     Task.add(req.body.taskSearch)
     .then(task => {
-        task.assignToUser(currentUser.id)
+        task.assignToUser(req.session.user.id)
         .then(() => {
-            currentTask.addChild(task)
-            // task.addParent(currentTask)
-            .then(() => {
-                res.redirect(`/`)
+            Task.getById(req.session.task.id)
+            .then(task => {
+                task.addChild(task)
+                .then(() => {
+                    res.redirect(`/`)
+                })
             })
         })
     })

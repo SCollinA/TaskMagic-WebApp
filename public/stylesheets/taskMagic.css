@@ -117,6 +117,14 @@ a {
     border-radius: 15px;
 }
 
+.taskDelete {
+    width: 40px;
+    height: 40px;
+    background-color: rgb(255, 47, 47);
+    margin: auto;
+    border-radius: 15px;
+}
+
 .toolbar {
     display: flex;
     justify-content: space-around;

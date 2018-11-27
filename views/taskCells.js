@@ -14,8 +14,13 @@ const taskCell = function(childTask) {
     return childTask.getChildren()
     .then(children => children.map(child => child.name).join(', '))
     .then(childNames => {
+        let deleteButton = ''
+        if (!childTask.active) {
+            deleteButton = `<a class="taskDelete" href="/delete/${childTask.id}"></a>`
+        }
         return `
         <div class='taskCell'>
+            ${deleteButton}
             <a class="task" href="/${childTask.id}">
                 <h6 class="taskName">${childTask.name}</h6>
                 <p class="childTaskName">${childNames}</p>

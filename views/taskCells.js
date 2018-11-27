@@ -15,7 +15,7 @@ const taskCell = function(childTask) {
     .then(children => children.map(child => child.name).join(', '))
     .then(childNames => {
         let deleteButton = ''
-        if (childTask.active) {
+        if (!childTask.active) {
             deleteButton = `<a class="taskDelete" href="/delete/${childTask.id}"></a>`
         }
         return `

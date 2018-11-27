@@ -169,11 +169,8 @@ app.get('/complete/:taskID([0-9]+)', (req, res) => {
 
 app.get('/delete/:taskID([0-9]+)', (req, res) => {
     // delete task here
-    Task.getById(req.params.taskID)
-    .then(task => {
-        task.delete()
-        .then(() => res.redirect('/'))
-    })
+    Task.deleteById(req.params.taskID)
+    .then(() => res.redirect('/'))
 })
 
 app.listen(port, () => console.log(`My Task App listening on port ${port}!`))

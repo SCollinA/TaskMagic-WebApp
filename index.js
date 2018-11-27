@@ -3,6 +3,7 @@ const Task = require('./models/Task')
 
 const taskView = require('./views/taskView')
 const taskNavView = require('./views/taskNav')
+const parentCells = require('./views/parentCells')
 const taskCells = require('./views/taskCells')
 const loginView = require('./views/loginView')
 const registerView = require('./views/registerView')
@@ -113,10 +114,16 @@ app.get('/', protectRoute, checkTask, (req, res) => {
         // need to get active children separately from complete tasks
         task.getChildren()
         .then(children => {
-            taskCells(children)
-            .then(taskCells => {
-                console.log(`Sending task view ${req.session.task.name}`)
-                res.send(taskView(taskNav, taskCells))
+            task.getParents()
+            .then(parents => {
+                taskCells(children)
+                .then(taskCells => {
+                    parentCells(parents)
+                    .then(parentCells => {
+                        console.log(`Sending task view ${req.session.task.name}`)
+                        res.send(taskView(taskNav, parentCells, taskCells))
+                    })
+                })
             })
         })
     })

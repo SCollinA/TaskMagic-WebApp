@@ -1,6 +1,6 @@
 const taskbar = require('./taskbar')
 
-const taskView = function(taskNav, taskCells) {
+const taskView = function(taskNav, taskCells, parentCell) {
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +14,7 @@ const taskView = function(taskNav, taskCells) {
   <body>
     ${taskNav}
     ${taskCells}
+    ${parentCell}
     ${taskbar()}
     <script src="/scripts/viewController.js"></script>
   </body>

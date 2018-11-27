@@ -31,14 +31,28 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 app.use(bodyParser.json())
 
+
+// middleware
 function protectRoute(req, res, next) {
-    if (req.session.user) {
-        next()
-    } else {
-        res.redirect('/login')
-    }
+    // check if current task is assigned to current user
+    Task.getById(req.session.task.id)
+    .then(task => {
+        // get users for task
+        task.getUsers()
+        .then(users => {
+            // map to ids of users
+            // if current user's id is in tasks users ids
+            if (users.map(user => user.id).includes(req.session.user)) {
+                next()
+            } else {
+                // else redirect to logged in user's rootTask
+                res.redirect('/home')
+            }
+        })
+    })
 }
 
+// to prevent users from navigating to task directly
 function checkTask(req, res, next) {
     // if they do not have task there is nothing to show them
     if (req.session.task) {

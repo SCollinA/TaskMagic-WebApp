@@ -94,14 +94,11 @@ class Task {
 
     // delete
     delete() {
-        return db.result('delete from users_Tasks where Task_id=$1', [this.id])
-        .then(() => db.result(`delete from parents_children where parent_task_id=$1 or child_task_id=$1`, [this.id]))
-        .then(() => db.result(`delete from Tasks where id=$1`, [this.id]))
+        return db.result(`delete from Tasks where id=$1`, [this.id])
     }
 
     static deleteById(id) {
-        return db.result('delete from users_Tasks where Task_id=$1', [id])
-        .then(() => db.result(`delete from Tasks where id=$1`, [id]))
+        return db.result(`delete from Tasks where id=$1`, [id])
     }
 }
 

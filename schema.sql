@@ -12,12 +12,12 @@ create table tasks (
 
 create table parents_children (
     id serial primary key,
-    parent_task_id integer references tasks (id),
-    child_task_id integer references tasks (id)
+    parent_task_id integer references tasks (id) on delete cascade,
+    child_task_id integer references tasks (id) on delete cascade
 );
 
 create table users_tasks (
     id serial primary key,
-    user_id integer references users (id),
-    task_id integer references tasks (id)
+    user_id integer references users (id) on delete cascade,
+    task_id integer references tasks (id) on delete cascade
 );

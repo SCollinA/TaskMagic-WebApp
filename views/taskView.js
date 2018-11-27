@@ -1,6 +1,6 @@
 const taskbar = require('./taskbar')
 
-const taskView = function(taskNav, parentCell, taskCells) {
+const taskView = function(taskNav, taskCells, parentCell) {
     return `
 <!DOCTYPE html>
 <html lang="en">

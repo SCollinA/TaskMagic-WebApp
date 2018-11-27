@@ -34,15 +34,25 @@ app.use(bodyParser.json())
 
 // middleware
 function protectRoute(req, res, next) {
+    if (req.session.user) {
+        next()
+    } else {
+        res.redirect('/login')
+    }
+}
+
+// make sure current user is owner of current task
+function checkUser(req, res, next) {
     // check if current task is assigned to current user
     Task.getById(req.session.task.id)
     .then(task => {
         // get users for task
         task.getUsers()
         .then(users => {
+            console.log(users, task)
             // map to ids of users
             // if current user's id is in tasks users ids
-            if (users.map(user => user.id).includes(req.session.user)) {
+            if (users.map(user => user.id).includes(req.session.user.id)) {
                 next()
             } else {
                 // else redirect to logged in user's rootTask
@@ -50,6 +60,7 @@ function protectRoute(req, res, next) {
             }
         })
     })
+    .catch(err => res.redirect('/login'))
 }
 
 // to prevent users from navigating to task directly
@@ -121,7 +132,7 @@ app.get('/home', protectRoute, (req, res) => {
 // define endpoints
 // listen for get requests
 // main page
-app.get('/', protectRoute, checkTask, (req, res) => { 
+app.get('/', protectRoute, checkUser, checkTask, (req, res) => { 
     const taskNav = taskNavView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
     Task.getById(req.session.task.id)
     .then(task => {

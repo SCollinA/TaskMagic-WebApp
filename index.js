@@ -171,7 +171,7 @@ app.get('/delete/:taskID([0-9]+)', (req, res) => {
     // delete task here
     Task.getById(req.params.taskID)
     .then(task => {
-        task.toggleActive()
+        task.delete()
         .then(() => res.redirect('/'))
     })
 })

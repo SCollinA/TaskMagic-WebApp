@@ -3,6 +3,7 @@ const Task = require('./models/Task')
 
 const taskView = require('./views/taskView')
 const taskNavView = require('./views/taskNav')
+const parentCell = require('./views/parentCell')
 const taskCells = require('./views/taskCells')
 const loginView = require('./views/loginView')
 const registerView = require('./views/registerView')
@@ -11,7 +12,7 @@ const bodyParser = require('body-parser')
 
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 3001
 
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
@@ -30,6 +31,8 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 app.use(bodyParser.json())
 
+
+// middleware
 function protectRoute(req, res, next) {
     if (req.session.user) {
         next()
@@ -38,6 +41,29 @@ function protectRoute(req, res, next) {
     }
 }
 
+// make sure current user is owner of current task
+function checkUser(req, res, next) {
+    // check if current task is assigned to current user
+    Task.getById(req.session.task.id)
+    .then(task => {
+        // get users for task
+        task.getUsers()
+        .then(users => {
+            console.log(users, task)
+            // map to ids of users
+            // if current user's id is in tasks users ids
+            if (users.map(user => user.id).includes(req.session.user.id)) {
+                next()
+            } else {
+                // else redirect to logged in user's rootTask
+                res.redirect('/home')
+            }
+        })
+    })
+    .catch(err => res.redirect('/login'))
+}
+
+// to prevent users from navigating to task directly
 function checkTask(req, res, next) {
     // if they do not have task there is nothing to show them
     if (req.session.task) {
@@ -106,17 +132,20 @@ app.get('/home', protectRoute, (req, res) => {
 // define endpoints
 // listen for get requests
 // main page
-app.get('/', protectRoute, checkTask, (req, res) => { 
+app.get('/', protectRoute, checkUser, checkTask, (req, res) => { 
     const taskNav = taskNavView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
     Task.getById(req.session.task.id)
     .then(task => {
         // need to get active children separately from complete tasks
         task.getChildren()
         .then(children => {
-            taskCells(children)
-            .then(taskCells => {
-                console.log(`Sending task view ${req.session.task.name}`)
-                res.send(taskView(taskNav, taskCells))
+            task.getParents()
+            .then(parents => {
+                taskCells(children)
+                .then(taskCells => {
+                    console.log(`Sending task view ${req.session.task.name}`)
+                    res.send(taskView(taskNav, taskCells, parentCell(parents)))
+                })
             })
         })
     })
@@ -159,12 +188,18 @@ app.post("/", protectRoute, (req, res) => {
     })
 })
 
-app.get('/complete/:taskID([0-9]+)', (req, res) => {
+app.get('/complete/:taskID([0-9]+)', protectRoute, (req, res) => {
     Task.getById(req.params.taskID)
     .then(task => {
         task.toggleActive()
         .then(() => res.redirect('/'))
     })
+})
+
+app.get('/delete/:taskID([0-9]+)', protectRoute, (req, res) => {
+    // delete task here
+    Task.deleteById(req.params.taskID)
+    .then(() => res.redirect('/'))
 })
 
 app.listen(port, () => console.log(`My Task App listening on port ${port}!`))

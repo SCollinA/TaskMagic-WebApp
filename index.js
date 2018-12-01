@@ -12,7 +12,7 @@ const bodyParser = require('body-parser')
 
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 3001
 
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
@@ -31,6 +31,8 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 app.use(bodyParser.json())
 
+
+// middleware
 function protectRoute(req, res, next) {
     if (req.session.user) {
         next()
@@ -39,6 +41,29 @@ function protectRoute(req, res, next) {
     }
 }
 
+// make sure current user is owner of current task
+function checkUser(req, res, next) {
+    // check if current task is assigned to current user
+    Task.getById(req.session.task.id)
+    .then(task => {
+        // get users for task
+        task.getUsers()
+        .then(users => {
+            console.log(users, task)
+            // map to ids of users
+            // if current user's id is in tasks users ids
+            if (users.map(user => user.id).includes(req.session.user.id)) {
+                next()
+            } else {
+                // else redirect to logged in user's rootTask
+                res.redirect('/home')
+            }
+        })
+    })
+    .catch(err => res.redirect('/login'))
+}
+
+// to prevent users from navigating to task directly
 function checkTask(req, res, next) {
     // if they do not have task there is nothing to show them
     if (req.session.task) {
@@ -107,7 +132,7 @@ app.get('/home', protectRoute, (req, res) => {
 // define endpoints
 // listen for get requests
 // main page
-app.get('/', protectRoute, checkTask, (req, res) => { 
+app.get('/', protectRoute, checkUser, checkTask, (req, res) => { 
     const taskNav = taskNavView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
     Task.getById(req.session.task.id)
     .then(task => {

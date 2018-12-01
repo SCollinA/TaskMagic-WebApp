@@ -12,7 +12,7 @@ const bodyParser = require('body-parser')
 
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 3001
 
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);

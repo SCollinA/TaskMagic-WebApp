@@ -15,6 +15,10 @@ html, body {
     margin: 0;
 }
 
+a {
+    text-decoration-line: none;
+}
+
 .header {
     display: flex;
     flex-direction: column;
@@ -42,7 +46,7 @@ html, body {
     border-radius: 1em;
 }
 
-.parentTask {
+.currentTask {
     background-color: coral;
     padding: 2%;
     min-width: 50%;
@@ -80,12 +84,18 @@ html, body {
     overflow-y: scroll;
 }
 
+.taskCell {
+    display: flex;
+    padding-right: 1%;
+}
+
 .task {
+    flex: 1;
     display: flex;
     justify-content: space-between;
     padding: 2% 5%;
     margin: 2% 5%;
-    background-color: cornflowerblue;
+    background-color: goldenrod;
     border-radius: 1em;
 }
 
@@ -97,6 +107,22 @@ html, body {
 .task > p {
     font-size: .5em;
     margin: auto 0;
+}
+
+.taskComplete {
+    width: 40px;
+    height: 40px;
+    background-color: greenyellow;
+    margin: auto;
+    border-radius: 15px;
+}
+
+.taskDelete {
+    width: 40px;
+    height: 40px;
+    background-color: rgb(255, 47, 47);
+    margin: auto;
+    border-radius: 15px;
 }
 
 .toolbar {

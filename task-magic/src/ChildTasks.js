@@ -11,7 +11,7 @@ export default class ChildTasks extends Component {
         return (
             <div className="childTasksContainer">
                 {this.tasks.map(task => {
-                    return <ChildTask task={task}/>
+                    return <ChildTask task={task} key={task.id}/>
                 })}
             </div>
         )

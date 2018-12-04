@@ -71,11 +71,11 @@ class User {
         return db.result('update users set name=$1 where id=$2', [newName, this.id])
     }
 
-    chooseTask(todo_id) {
-        return db.result('insert into users_tasks (user_id, todo_id) values ($1, $2)', [this.id, task_id])
+    chooseTask(task_id) {
+        return db.result('insert into users_tasks (user_id, task_id) values ($1, $2)', [this.id, task_id])
     }
 
-    removeTask(todo_id) {
+    removeTask(task_id) {
         return db.result('delete from users_tasks where user_id=$1 and task_id=$2', [this.id, task_id])
     }
     

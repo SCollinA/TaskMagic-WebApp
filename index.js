@@ -202,4 +202,33 @@ app.get('/delete/:taskID([0-9]+)', protectRoute, (req, res) => {
     .then(() => res.redirect('/'))
 })
 
+
+// REACT methods below >>
+app.get('/test-react', (req, res) => {
+    User.getById(1)
+    .then(user => user.getAllTasks())
+    .then(tasks => res.json(tasks))
+})
+
+app.post('/test-react', (req, res) => {
+    User.getById(1)
+    .then(user => {
+        console.log(req.body)
+        Task.add(req.body.taskName)
+        .then(task => user.chooseTask(task.id))
+        .then(() => user.getAllTasks())
+        .then(tasks => res.json(tasks))
+    })
+})
+
+app.post('/test-react-delete', (req, res) => {
+    User.getById(1)
+    .then(user => {
+        Task.getByName(req.body.taskName)
+        .then(task => user.chooseTask(task.id))
+        .then(user.getAllTasks)
+        .then(tasks => res.json(tasks))
+    })
+})
+
 app.listen(port, () => console.log(`My Task App listening on port ${port}!`))

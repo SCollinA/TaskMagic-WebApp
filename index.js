@@ -213,7 +213,6 @@ app.get('/test-react', (req, res) => {
 app.post('/test-react', (req, res) => {
     User.getById(1)
     .then(user => {
-        console.log(req.body)
         Task.add(req.body.taskName)
         .then(task => user.chooseTask(task.id))
         .then(() => user.getAllTasks())
@@ -221,12 +220,12 @@ app.post('/test-react', (req, res) => {
     })
 })
 
-app.post('/test-react-delete', (req, res) => {
+app.delete('/test-react-delete', (req, res) => {
     User.getById(1)
     .then(user => {
-        Task.getByName(req.body.taskName)
-        .then(task => user.chooseTask(task.id))
-        .then(user.getAllTasks)
+        Task.getById(req.body.taskID)
+        .then(task => user.removeTask(task.id))
+        .then(() => user.getAllTasks())
         .then(tasks => res.json(tasks))
     })
 })

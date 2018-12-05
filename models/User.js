@@ -39,7 +39,18 @@ class User {
     }
 
     getAllTasks() {
-        return db.any('select Tasks.id, Tasks.name, Tasks.active, Tasks.time_created, Tasks.time_changed from Tasks join users_Tasks ut on Tasks.id=ut.Task_id join users on ut.user_id=users.id where users.id=$1', [this.id])
+        return db.any(`
+        select Tasks.id, Tasks.name, Tasks.active, Tasks.time_created, Tasks.time_changed 
+        from Tasks 
+            join 
+            users_Tasks ut 
+            on Tasks.id=ut.Task_id 
+                join 
+                users 
+                on ut.user_id=users.id 
+        where users.id=$1
+        order by active desc, time_changed desc
+        `, [this.id])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
 

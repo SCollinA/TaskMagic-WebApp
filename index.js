@@ -34,15 +34,19 @@ app.use(bodyParser.json())
 
 // middleware
 function protectRoute(req, res, next) {
+    console.log('protecting route')
     if (req.session.user) {
+        console.log('user authenticated')
         next()
     } else {
-        res.redirect('/login')
+        console.log('user not authenticated')
+        res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
     }
 }
 
 // make sure current user is owner of current task
 function checkUser(req, res, next) {
+    console.log('checking user')
     // check if current task is assigned to current user
     Task.getById(req.session.task.id)
     .then(task => {
@@ -60,23 +64,32 @@ function checkUser(req, res, next) {
             }
         })
     })
-    .catch(err => res.redirect('/login'))
+    // .catch(err => res.redirect('/login'))
 }
 
 // to prevent users from navigating to task directly
 function checkTask(req, res, next) {
+    console.log('checking task')
     // if they do not have task there is nothing to show them
     if (req.session.task) {
         next()
     } else {
-        res.redirect('/login')
+        console.log('no task selected')
+        res.redirect('/logout')
     }
+    // else {
+    //     res.redirect('/login')
+    // }
 }
 
-app.get('/login', (req, res) => {
-    res.send(loginView())
-})
+// app.get('/login', (req, res) => {
+//     req.session.destroy()
+//     // res.send(loginView())
+
+// })
+
 app.post('/login', (req, res) => {
+    console.log('received post for /login')
     // get values from form
     const userName = req.body.username.toLowerCase()
     const password = req.body.password
@@ -87,18 +100,20 @@ app.post('/login', (req, res) => {
             req.session.user = user
             res.redirect(`/home`)
         } else {
-            res.redirect('/login');
+            console.log('bad password')
+            res.redirect('/logout')
         }
     })
 })
 
-app.post('/logout', (req, res) => {
+app.get('/logout', (req, res) => {
+    // res.redirect('/login')
     req.session.destroy()
-    res.redirect('/login')
+    res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
 })
 
 app.get('/register', (req, res) => {
-    res.send(registerView())
+    // res.send(registerView())
 })
 app.post('/register', (req, res) => {
     // get values
@@ -117,171 +132,141 @@ app.post('/register', (req, res) => {
     })
 })
 
-app.get('/home', protectRoute, (req, res) => {
-    const user = req.session.user
-    User.getById(user.id)
+app.get('/home', (req, res) => {
+    console.log('user sent to /home')
+    User.getById(req.session.user.id)
     .then(user => {
         user.rootTask()
         .then(rootTask => {
             req.session.task = rootTask
-            req.session.previousTasks = []
-            res.redirect('/')
+            console.log('sending user to /test-react')
+            res.redirect('/test-react')
         })
     })
 })
 // define endpoints
 // listen for get requests
 // main page
-app.get('/', protectRoute, checkUser, checkTask, (req, res) => { 
-    const taskNav = taskNavView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
-    Task.getById(req.session.task.id)
-    .then(task => {
-        // need to get active children separately from complete tasks
-        task.getChildren()
-        .then(children => {
-            task.getParents()
-            .then(parents => {
-                taskCells(children)
-                .then(taskCells => {
-                    console.log(`Sending task view ${req.session.task.name}`)
-                    res.send(taskView(taskNav, taskCells, parentCell(parents)))
-                })
-            })
-        })
-    })
-})
+// app.get('/', protectRoute, checkTask, checkUser, (req, res) => { 
+//     console.log('what the fuck')
+//     // const taskNav = taskNavView(req.session.task, req.session.previousTasks[req.session.previousTasks.length - 1])
+//     // Task.getById(req.session.task.id)
+//     // .then(task => {
+//     //     // need to get active children separately from complete tasks
+//     //     task.getChildren()
+//     //     .then(children => {
+//     //         task.getParents()
+//     //         .then(parents => {
+//     //             taskCells(children)
+//     //             .then(taskCells => {
+//     //                 console.log(`Sending task view ${req.session.task.name}`)
+//     //                 res.send(taskView(taskNav, taskCells, parentCell(parents)))
+//     //             })
+//     //         })
+//     //     })
+//     // })
+//     res.redirect('/test-react')
+// })
 
-app.get('/back', protectRoute, (req, res) => {
-    req.session.task = req.session.previousTasks.pop()
-    console.log(req.session.previousTasks)
-    console.log(`Going back to ${req.session.task.name}`)
-    res.redirect('/')
-})
+// app.get('/back', protectRoute, (req, res) => {
+//     req.session.task = req.session.previousTasks.pop()
+//     console.log(req.session.previousTasks)
+//     console.log(`Going back to ${req.session.task.name}`)
+//     res.redirect('/')
+// })
 // doing the task magic
 // getting the task
-app.get("/:taskID([0-9]+)", protectRoute, (req, res) => {
-    Task.getById(req.params.taskID)
-    .then(task => {
-        req.session.previousTasks.push(req.session.task)
-        console.log(req.session.previousTasks)
-        req.session.task = task
-        console.log(`Task selected: ${task.name}`)
-        res.redirect('/')
-    })
-})
+// app.get("/:taskID([0-9]+)", protectRoute, (req, res) => {
+//     Task.getById(req.params.taskID)
+//     .then(task => {
+//         req.session.previousTasks.push(req.session.task)
+//         console.log(req.session.previousTasks)
+//         req.session.task = task
+//         console.log(`Task selected: ${task.name}`)
+//         res.redirect('/')
+//     })
+// })
 
 // adds a new task to user's list
-app.post("/", protectRoute, (req, res) => {
-    // console.log(req.body)
-    Task.add(req.body.taskSearch)
-    .then(task => {
-        task.assignToUser(req.session.user.id)
-        .then(() => {
-            Task.getById(req.session.task.id)
-            .then(parentTask => {
-                parentTask.addChild(task)
-                .then(() => {
-                    res.redirect(`/`)
-                })
-            })
-        })
-    })
-})
+// app.post("/", protectRoute, (req, res) => {
+//     // console.log(req.body)
+//     Task.add(req.body.taskSearch)
+//     .then(task => {
+//         task.assignToUser(req.session.user.id)
+//         .then(() => {
+//             Task.getById(req.session.task.id)
+//             .then(parentTask => {
+//                 parentTask.addChild(task)
+//                 .then(() => {
+//                     res.redirect(`/`)
+//                 })
+//             })
+//         })
+//     })
+// })
 
-app.get('/complete/:taskID([0-9]+)', protectRoute, (req, res) => {
-    Task.getById(req.params.taskID)
-    .then(task => {
-        task.toggleActive()
-        .then(() => res.redirect('/'))
-    })
-})
+// app.get('/complete/:taskID([0-9]+)', protectRoute, (req, res) => {
+//     Task.getById(req.params.taskID)
+//     .then(task => {
+//         task.toggleActive()
+//         .then(() => res.redirect('/'))
+//     })
+// })
 
-app.get('/delete/:taskID([0-9]+)', protectRoute, (req, res) => {
-    // delete task here
-    Task.deleteById(req.params.taskID)
-    .then(() => res.redirect('/'))
-})
+// app.get('/delete/:taskID([0-9]+)', protectRoute, (req, res) => {
+//     // delete task here
+//     Task.deleteById(req.params.taskID)
+//     .then(() => res.redirect('/'))
+// })
 
 
 // REACT methods below >>
 // create
 app.post('/test-react', (req, res) => {
-    User.getById(1)
-    .then(user => {
-        return user.rootTask()
-        .then(rootTask => {
-            console.log(req.body.taskName)
-            return Task.add(req.body.taskName)
-            .then(task => {
-                return user.chooseTask(task.id)
-                .then(() => task.addParent(rootTask))
-            })
-            .then(() => rootTask.getChildren())
-            .then(children => Promise.all(children.map(child => {
-                return child.getChildren()
-                .then(grandChildren => {return {...child, children: grandChildren}})
-            })))
-            .then(children => res.json(children))
+    console.log(req.body.taskName)
+    return Task.add(req.body.taskName)
+    .then(task => {
+        User.getById(req.session.user.id)
+        .then(user => {
+            user.chooseTask(task.id)
+            .then(() => task.addParent(req.session.task))
         })
     })
+    .then(() => res.redirect('/test-react'))
 })
 // retrieve
-app.get('/test-react', (req, res) => {
-    User.getById(1)
-    .then(user => user.rootTask())
-    .then(task => task.getChildren())
-    .then(children => Promise.all(children.map(child => {
-        return child.getChildren()
-        .then(grandChildren => {return {...child, children: grandChildren}})
-    })))
-    .then(children => res.json(children))
+app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
+    console.log('hello')
+    return ((req.session.task && req.session.user) && Task.getById(req.session.task.id)
+    .then(task => {
+        return task.getChildren()
+        .then(children => Promise.all(children.map(child => {
+            return child.getChildren()
+            .then(grandChildren => {return {...child, children: grandChildren}})
+        })))
+    })
+    .then(children => res.json({user: req.session.user, children, currentTask: req.session.task}))) || res.json()
 })
 //update
 app.post('/test-react-complete', (req, res) => {
     Task.getById(req.body.id)
     .then(task => task.toggleActive())
-    .then(() => {
-        User.getById(1)
-        .then(user => {
-            user.rootTask()
-            .then(task => task.getChildren())
-            .then(children => Promise.all(children.map(child => {
-                return child.getChildren()
-                .then(grandChildren => {return {...child, children: grandChildren}})
-            })))
-            .then(children => res.json(children))
-        })
-    })
+    .then(() => res.redirect('/test-react'))
 })
 
 app.post('/test-react-name', (req, res) => {
-    User.getById(1)
-    .then(user => {
-        Task.getById(req.body.taskToUpdate.id)
-        .then(task => task.updateName(req.body.name))
-        .then(() => user.rootTask())
-        .then(task => task.getChildren())
-        .then(children => Promise.all(children.map(child => {
-            return child.getChildren()
-            .then(grandChildren => {return {...child, children: grandChildren}})
-        })))
-        .then(children => res.json(children))
-    })
+    Task.getById(req.body.taskToUpdate.id)
+    .then(task => task.updateName(req.body.name))
+    .then(() => res.redirect('/test-react'))
 })
 // delete
 app.delete('/test-react-delete', (req, res) => {
-    User.getById(1)
-    .then(user => {
-        Task.getById(req.body.taskID)
-        .then(task => user.removeTask(task.id))
-        .then(() => user.rootTask())
-        .then(task => task.getChildren())
-        .then(children => Promise.all(children.map(child => {
-            return child.getChildren()
-            .then(grandChildren => {return {...child, children: grandChildren}})
-        })))
-        .then(children => res.json(children))
+    Task.getById(req.body.taskID)
+    .then(task => {
+        User.getById(req.session.user)
+        .then(user => user.removeTask(task.id))
     })
+    .then(() => res.redirect('/test-react'))
 })
 
 app.listen(port, () => console.log(`My Task App listening on port ${port}!`))

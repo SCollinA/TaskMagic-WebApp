@@ -220,7 +220,11 @@ app.get('/test-react', (req, res) => {
     User.getById(1)
     .then(user => user.rootTask())
     .then(task => task.getChildren())
-    .then(tasks => res.json(tasks))
+    .then(children => Promise.all(children.map(child => {
+        return child.getChildren()
+        .then(grandChildren => {return {...child, children: grandChildren}})
+    })))
+    .then(children => res.json(children))
 })
 //update
 app.post('/test-react-complete', (req, res) => {

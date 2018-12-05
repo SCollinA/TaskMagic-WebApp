@@ -49,7 +49,7 @@ class User {
                 users 
                 on ut.user_id=users.id 
         where users.id=$1
-        order by active desc, time_changed desc
+        order by active desc, time_changed asc
         `, [this.id])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }

@@ -79,7 +79,9 @@ class Task {
 
     toggleActive() {
         this.active = !this.active
-        return db.result('update Tasks set active=$1, set time_changed=$2 where id=$3', [this.active, new Date(), this.id])
+        const currentTime = new Date()
+        currentTime.setHours(currentTime.getHours() - (currentTime.getTimezoneOffset() / 60)) 
+        return db.result('update Tasks set active=$1, time_changed=$2 where id=$3', [this.active, currentTime, this.id])
     }
 
     // addParent(parentTask) {

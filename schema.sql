@@ -7,7 +7,9 @@ create table users (
 create table tasks (
     id serial primary key,
     name text,
-    active boolean
+    active boolean,
+    time_created timestamp,
+    time_changed timestamp
 );
 
 create table parents_children (

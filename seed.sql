@@ -1,20 +1,20 @@
 insert into tasks 
-(name, active)
+(name, active, time_created, time_changed)
 values
-('go shopping', true),
-('buy shoes', true),
-('buy coat', true),
-('yardwork', true),
-('trim hedges', true),
-('mow lawn', false),
-('meals', true),
-('breakfast', true),
-('dinner', true),
-('fun', true),
-('ride bike', true),
-('juggle', false),
-('collin''s life', true),
-('hallie''s life', true);
+('go shopping', true, 'today', 'today'),
+('buy shoes', true, 'today', 'today'),
+('buy coat', true, 'today', 'today'),
+('yardwork', true, 'today', 'today'),
+('trim hedges', true, 'today', 'today'),
+('mow lawn', false, 'today', 'today'),
+('meals', true, 'today', 'today'),
+('breakfast', true, 'today', 'today'),
+('dinner', true, 'today', 'today'),
+('fun', true, 'today', 'today'),
+('ride bike', true, 'today', 'today'),
+('juggle', false, 'today', 'today'),
+('collin''s life', true, 'today', 'today'),
+('hallie''s life', true, 'today', 'today');
 
 insert into users
 (name, pwhash)

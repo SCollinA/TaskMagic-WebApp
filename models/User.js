@@ -39,22 +39,22 @@ class User {
     }
 
     getAllTasks() {
-        return db.any('select Tasks.id, Tasks.name, Tasks.active from Tasks join users_Tasks ut on Tasks.id=ut.Task_id join users on ut.user_id=users.id where users.id=$1', [this.id])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+        return db.any('select Tasks.id, Tasks.name, Tasks.active, Tasks.time_created, Tasks.time_changed, from Tasks join users_Tasks ut on Tasks.id=ut.Task_id join users on ut.user_id=users.id where users.id=$1', [this.id])
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
 
     rootTask() {
-        return db.one(`select userTasks.id, userTasks.name, userTasks.active
-        from (select t.id, t.name, t.active from tasks t
+        return db.one(`select userTasks.id, userTasks.name, userTasks.active, userTasks.time_created, userTasks.time_changed
+        from (select * from tasks t
                         join
                       users_tasks ut
                           on ut.task_id=t.id
                           where ut.user_id=$1) as userTasks
         join
-        (select ta.id, ta.name, ta.active, allChildren.id as acID 
+        (select ta.id, ta.name, ta.active, ta.time_created, ta.time_changed, allChildren.id as acID 
                 from tasks ta
                     left join
-                (select tsks.id, tsks.name, tsks.active 
+                (select * 
                      from tasks tsks
                         join
                           parents_children pc
@@ -62,7 +62,7 @@ class User {
                 on allChildren.id=ta.id
                 where allChildren.id is NULL) as rootTask
         on userTasks.id=rootTask.id`, [this.id])
-        .then(result => new Task(result.id, result.name, result.active))
+        .then(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed))
     }
     
     // Update

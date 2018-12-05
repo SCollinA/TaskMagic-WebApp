@@ -1,10 +1,12 @@
 const db = require('./db')
 
 class Task {
-    constructor(id, name, active) {
+    constructor(id, name, active, time_created, time_changed) {
         this.id = id
         this.name = name
         this.active = active
+        this.time_created = time_created
+        this.time_changed = time_changed
     }
 
     // create
@@ -17,23 +19,23 @@ class Task {
     // retrieve
     static getById(id) {
         return db.one(`select * from Tasks where id=$1`, [id])
-        .then(result => new Task(result.id, result.name, result.active))
+        .then(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed))
     }
 
     static getByName(name) {
         return db.any('select * from Tasks where name ilike \'%$1:value%\'', [name])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
 
     static getByActive(active) {
         return db.any('select * from Tasks where active=$1', [active])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
     
     static getAll() {
         return db.any('select * from Tasks')
         // .then(resultsArray => Promise.all(resultsArray.map(result => Task.getById(result.id))))
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
 
     getUsers() {
@@ -50,12 +52,12 @@ class Task {
 
     getChildren() {
         return db.any('select t.id, t.name, t.active from tasks t join parents_children pc on t.id=pc.child_task_id join tasks on tasks.id=pc.parent_task_id where tasks.id=$1', [this.id])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
 
     getParents() {
         return db.any('select t.id, t.name from tasks t join parents_children pc on t.id=pc.parent_task_id join tasks on tasks.id=pc.child_task_id where tasks.id=$1', [this.id])
-        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active)))
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
     
     // update  

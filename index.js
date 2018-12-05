@@ -204,12 +204,7 @@ app.get('/delete/:taskID([0-9]+)', protectRoute, (req, res) => {
 
 
 // REACT methods below >>
-app.get('/test-react', (req, res) => {
-    User.getById(1)
-    .then(user => user.getAllTasks())
-    .then(tasks => res.json(tasks))
-})
-
+// create
 app.post('/test-react', (req, res) => {
     User.getById(1)
     .then(user => {
@@ -220,7 +215,35 @@ app.post('/test-react', (req, res) => {
         .then(tasks => res.json(tasks))
     })
 })
+// retrieve
+app.get('/test-react', (req, res) => {
+    User.getById(1)
+    .then(user => user.getAllTasks())
+    .then(tasks => res.json(tasks))
+})
+//update
+app.post('/test-react-complete', (req, res) => {
+    Task.getById(req.body.id)
+    .then(task => task.toggleActive())
+    .then(() => {
+        User.getById(1)
+        .then(user => {
+            user.getAllTasks()
+            .then(tasks => res.json(tasks))
+        })
+    })
+})
 
+app.post('/test-react-name', (req, res) => {
+    User.getById(1)
+    .then(user => {
+        Task.getById(req.body.taskToUpdate.id)
+        .then(task => task.updateName(req.body.name))
+        .then(() => user.getAllTasks())
+        .then(tasks => res.json(tasks))
+    })
+})
+// delete
 app.delete('/test-react-delete', (req, res) => {
     User.getById(1)
     .then(user => {

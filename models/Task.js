@@ -53,7 +53,17 @@ class Task {
     }
 
     getChildren() {
-        return db.any('select t.id, t.name, t.active, t.time_created, t.time_changed from tasks t join parents_children pc on t.id=pc.child_task_id join tasks on tasks.id=pc.parent_task_id where tasks.id=$1', [this.id])
+        return db.any(`
+        select t.id, t.name, t.active, t.time_created, t.time_changed 
+        from tasks t 
+            join 
+            parents_children pc 
+            on t.id=pc.child_task_id 
+                join 
+                tasks 
+                on tasks.id=pc.parent_task_id 
+                where tasks.id=$1 
+        order by active desc, time_changed asc`, [this.id])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
 
@@ -84,13 +94,13 @@ class Task {
         return db.result('update Tasks set active=$1, time_changed=$2 where id=$3', [this.active, currentTime, this.id])
     }
 
-    // addParent(parentTask) {
-    //     return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [parentTask.id, this.id])
-    // }
+    addParent(parentTask) {
+        return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [parentTask.id, this.id])
+    }
 
-    // removeParent(parentTask) {
-    //     return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [parentTask.id, this.id])
-    // }
+    removeParent(parentTask) {
+        return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [parentTask.id, this.id])
+    }
 
     addChild(task) {
         return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, task.id])

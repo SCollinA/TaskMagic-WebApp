@@ -218,7 +218,8 @@ app.post('/test-react', (req, res) => {
 // retrieve
 app.get('/test-react', (req, res) => {
     User.getById(1)
-    .then(user => user.getAllTasks())
+    .then(user => user.rootTask())
+    .then(task => task.getChildren())
     .then(tasks => res.json(tasks))
 })
 //update

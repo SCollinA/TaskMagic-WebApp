@@ -94,13 +94,13 @@ class Task {
         return db.result('update Tasks set active=$1, time_changed=$2 where id=$3', [this.active, currentTime, this.id])
     }
 
-    // addParent(parentTask) {
-    //     return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [parentTask.id, this.id])
-    // }
+    addParent(parentTask) {
+        return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [parentTask.id, this.id])
+    }
 
-    // removeParent(parentTask) {
-    //     return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [parentTask.id, this.id])
-    // }
+    removeParent(parentTask) {
+        return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [parentTask.id, this.id])
+    }
 
     addChild(task) {
         return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, task.id])

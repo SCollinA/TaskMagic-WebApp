@@ -208,16 +208,21 @@ app.get('/delete/:taskID([0-9]+)', protectRoute, (req, res) => {
 app.post('/test-react', (req, res) => {
     User.getById(1)
     .then(user => {
-        console.log(req.body.taskName)
-        Task.add(req.body.taskName)
-        .then(task => user.chooseTask(task.id))
-        .then(() => user.rootTask())
-        .then(task => task.getChildren())
-        .then(children => Promise.all(children.map(child => {
-            return child.getChildren()
-            .then(grandChildren => {return {...child, children: grandChildren}})
-        })))
-        .then(children => res.json(children))
+        return user.rootTask()
+        .then(rootTask => {
+            console.log(req.body.taskName)
+            return Task.add(req.body.taskName)
+            .then(task => {
+                return user.chooseTask(task.id)
+                .then(() => task.addParent(rootTask))
+            })
+            .then(() => rootTask.getChildren())
+            .then(children => Promise.all(children.map(child => {
+                return child.getChildren()
+                .then(grandChildren => {return {...child, children: grandChildren}})
+            })))
+            .then(children => res.json(children))
+        })
     })
 })
 // retrieve

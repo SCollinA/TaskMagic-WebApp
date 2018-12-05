@@ -237,7 +237,10 @@ app.post('/test-react-complete', (req, res) => {
 app.post('/test-react-name', (req, res) => {
     User.getById(1)
     .then(user => {
-
+        Task.getById(req.body.taskToUpdate.id)
+        .then(task => task.updateName(req.body.name))
+        .then(() => user.getAllTasks())
+        .then(tasks => res.json(tasks))
     })
 })
 // delete

@@ -11,7 +11,9 @@ class Task {
 
     // create
     static add(name) {
-        return db.one('insert into Tasks (name, active, time_created, time_changed) values ($1, $2, $3, $4) returning id', [name, true, new Date(), new Date()])
+        const currentTime = new Date()
+        currentTime.setHours(currentTime.getHours() - (currentTime.getTimezoneOffset() / 60)) 
+        return db.one('insert into Tasks (name, active, time_created, time_changed) values ($1, $2, $3, $4) returning id', [name, true, currentTime, currentTime])
         .then(result => Task.getById(result.id))
         // .then(result => new Task(result.id, name, true))
     }

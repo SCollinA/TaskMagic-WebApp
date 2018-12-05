@@ -213,6 +213,7 @@ app.get('/test-react', (req, res) => {
 app.post('/test-react', (req, res) => {
     User.getById(1)
     .then(user => {
+        console.log(req.body.taskName)
         Task.add(req.body.taskName)
         .then(task => user.chooseTask(task.id))
         .then(() => user.getAllTasks())

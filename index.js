@@ -222,7 +222,7 @@ app.get('/home', (req, res) => {
 
 // REACT methods below >>
 // create
-app.post('/test-react', (req, res) => {
+app.post('/test-react', protectRoute, (req, res) => {
     console.log(req.body.taskName)
     return Task.add(req.body.taskName)
     .then(task => {

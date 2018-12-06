@@ -53,7 +53,6 @@ function checkUser(req, res, next) {
         // get users for task
         task.getUsers()
         .then(users => {
-            console.log(users, task)
             // map to ids of users
             // if current user's id is in tasks users ids
             if (users.map(user => user.id).includes(req.session.user.id)) {
@@ -113,7 +112,7 @@ app.post('/login', (req, res) => {
 app.get('/logout', (req, res) => {
     // res.redirect('/login')
     req.session.destroy()
-    res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
+    res.send({children: [], parents: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
 })
 
 // app.get('/register', (req, res) => {
@@ -281,7 +280,7 @@ app.post('/test-react-name', (req, res) => {
 })
 // delete
 app.delete('/test-react-delete', (req, res) => {
-    Task.getById(req.body.taskID)
+    Task.getById(req.body.iDtoDelete)
     .then(task => {
         User.getById(req.session.user)
         .then(user => user.removeTask(task.id))

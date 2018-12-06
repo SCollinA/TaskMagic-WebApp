@@ -263,6 +263,13 @@ app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
     })
 })
 
+app.get('/test-react-all-tasks', (req, res) => {
+    console.log('getting all tasks for user')
+    User.getById(req.session.user.id)
+    .then(user => user.getAllTasks())
+    .then(tasks => res.json(tasks))
+})
+
 app.post('/test-react-task', (req, res) => {
     console.log('selecting new task')
     console.log(req.body.taskToSelect)

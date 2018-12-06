@@ -112,16 +112,16 @@ app.get('/logout', (req, res) => {
     res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
 })
 
-app.get('/register', (req, res) => {
-    // res.send(registerView())
-})
+// app.get('/register', (req, res) => {
+//     // res.send(registerView())
+// })
 app.post('/register', (req, res) => {
+    console.log('received post for /register')
     // get values
     const userName = req.body.username.toLowerCase()
     const password = req.body.password
     // create user
     User.add(userName, password)
-    .catch(() => res.redirect('/register'))
     .then(user => {
         req.session.user = user
         Task.add(`${userName}'s life`)

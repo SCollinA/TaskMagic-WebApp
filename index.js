@@ -101,7 +101,7 @@ app.post('/login', (req, res) => {
             res.redirect(`/home`)
         } else {
             console.log('bad password')
-            res.redirect('/logout')
+            res.send({currentTask: {name: 'Bad password...'}})
         }
     })
     .catch(() => {

@@ -110,6 +110,7 @@ app.post('/login', (req, res) => {
 })
 
 app.get('/logout', (req, res) => {
+    console.log('logging out')
     // res.redirect('/login')
     req.session.destroy()
     res.send({children: [], parents: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
@@ -230,7 +231,6 @@ app.get('/home', (req, res) => {
 // REACT methods below >>
 // create
 app.post('/test-react', protectRoute, (req, res) => {
-    console.log(req.body.taskName)
     return Task.add(req.body.taskName)
     .then(task => {
         User.getById(req.session.user.id)
@@ -255,7 +255,10 @@ app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
         })))
         .then(children => {
             task.getParents()
-            .then(parents => res.json({parents, currentTask: req.session.task, children, user: req.session.user}))
+            .then(parents => {
+                console.log('everything is good')
+                res.json({parents, currentTask: req.session.task, children, user: req.session.user})
+            })
         })
     })
 })
@@ -274,16 +277,21 @@ app.post('/test-react-complete', (req, res) => {
 })
 
 app.post('/test-react-name', (req, res) => {
+    console.log('updating name')
     Task.getById(req.body.taskToUpdate.id)
     .then(task => task.updateName(req.body.name))
     .then(() => res.redirect('/test-react'))
 })
 // delete
-app.delete('/test-react-delete', (req, res) => {
-    Task.getById(req.body.iDtoDelete)
+app.post('/test-react-delete', (req, res) => {
+    console.log('deleting task')
+    Task.getById(req.body.iDToDelete)
     .then(task => {
-        User.getById(req.session.user)
-        .then(user => user.removeTask(task.id))
+        User.getById(req.session.user.id)
+        .then(user => {
+            user.removeTask(task.id)
+            .then(() => task.removeParent())
+        })
     })
     .then(() => res.redirect('/test-react'))
 })

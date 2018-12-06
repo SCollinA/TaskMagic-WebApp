@@ -244,16 +244,28 @@ app.post('/test-react', protectRoute, (req, res) => {
 })
 // retrieve
 app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
-    console.log('hello')
-    return ((req.session.task && req.session.user) && Task.getById(req.session.task.id)
+    console.log('getting user home page')
+    return Task.getById(req.session.task.id)
     .then(task => {
+        // get the task's children
         return task.getChildren()
+        // give the children a children property
         .then(children => Promise.all(children.map(child => {
             return child.getChildren()
             .then(grandChildren => {return {...child, children: grandChildren}})
         })))
+        .then(children => {
+            task.getParents()
+            .then(parents => res.json({parents, currentTask: req.session.task, children, user: req.session.user}))
+        })
     })
-    .then(children => res.json({user: req.session.user, children, currentTask: req.session.task}))) || res.json()
+})
+
+app.post('/test-react-task', (req, res) => {
+    console.log('selecting new task')
+    console.log(req.body.taskToSelect)
+    req.session.task = req.body.taskToSelect
+    res.redirect('/test-react')
 })
 //update
 app.post('/test-react-complete', (req, res) => {

@@ -104,6 +104,10 @@ app.post('/login', (req, res) => {
             res.redirect('/logout')
         }
     })
+    .catch(() => {
+        console.log('username not found')
+        res.send({currentTask: {name: 'Username not found...'}})
+    })
 })
 
 app.get('/logout', (req, res) => {
@@ -129,6 +133,10 @@ app.post('/register', (req, res) => {
             task.assignToUser(user.id)
             .then(() => res.redirect(`/home`))
         })
+    })
+    .catch(() => {
+        console.log('username exists')
+        res.send({currentTask: {name: 'Username exists...'}})
     })
 })
 

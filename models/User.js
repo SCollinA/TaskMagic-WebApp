@@ -4,29 +4,30 @@ const db = require('./db')
 const Task = require('./Task')
 
 class User {
-    constructor(id, name, pwhash) {
+    constructor(id, name, pwhash, root_task_id) {
         this.id = id
         this.name = name
-        this.pwhash = pwhash       
+        this.pwhash = pwhash  
+        this.root_task_id = root_task_id
     }
 
     // Create
-    static add(name, password) {
+    static add(name, password, root_task_id) {
         const salt = bcrypt.genSaltSync(saltRounds);
         const pwhash = bcrypt.hashSync(password, salt)
         console.log(pwhash)
-        return db.one('insert into users (name, pwhash) values ($1, $2) returning id', [name, pwhash])
-        .then(result => new User(result.id, name, pwhash))
+        return db.one('insert into users (name, pwhash, root_task_id) values ($1, $2, $3) returning id', [name, pwhash, root_task_id])
+        .then(result => new User(result.id, name, pwhash, root_task_id))
     }
     // Retrieve
     static getById(id) {
         return db.one('select * from users where id=$1:raw', [id])
-        .then(result => new User(result.id, result.name, result.pwhash))
+        .then(result => new User(result.id, result.name, result.pwhash, result.root_task_id))
     }
 
     static getByName(name) {
         return db.one('select * from users where name=\'$1:raw\'', [name])
-        .then(result => new User(result.id, result.name, result.pwhash))
+        .then(result => new User(result.id, result.name, result.pwhash, result.root_task_id))
     }
 
     matchPassword(password) {
@@ -35,7 +36,7 @@ class User {
     
     static getAll() {
         return db.any('select * from users')
-        .then(resultsArray => resultsArray.map(result => new User(result.id, result.name, result.pwhash)))
+        .then(resultsArray => resultsArray.map(result => new User(result.id, result.name, result.pwhash, result.root_task_id)))
     }
 
     getAllTasks() {

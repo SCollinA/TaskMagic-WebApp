@@ -1,15 +1,16 @@
-create table users (
-    id serial primary key,
-    name varchar(60) unique not null,
-    pwhash varchar(60) not null
-);
-
 create table tasks (
     id serial primary key,
     name text,
     active boolean,
     time_created timestamp,
     time_changed timestamp
+);
+
+create table users (
+    id serial primary key,
+    name varchar(60) unique not null,
+    pwhash varchar(60) not null,
+    root_task_id integer references tasks (id) not null
 );
 
 create table parents_children (

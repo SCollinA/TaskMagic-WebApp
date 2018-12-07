@@ -138,11 +138,11 @@ app.post('/register', (req, res) => {
     const userName = req.body.username.toLowerCase()
     const password = req.body.password
     // create user
-    User.add(userName, password)
-    .then(user => {
-        req.session.user = user
-        Task.add(`${userName}'s life`)
-        .then(task => {
+    Task.add(`${userName}'s life`)
+    .then(task => {
+        User.add(userName, password, task.id)
+        .then(user => {
+            req.session.user = user
             task.assignToUser(user.id)
             .then(() => res.redirect(`home`))
         })

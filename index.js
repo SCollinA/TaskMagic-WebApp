@@ -32,7 +32,9 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 app.use(function(req, res, next) {
-    req.url = req.url.slice(4)
+    if (req.url.slice(0, 4) == '/api') {
+        req.url = req.url.slice(4)
+    }
     next();
   });
 

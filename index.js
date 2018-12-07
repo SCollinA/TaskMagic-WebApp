@@ -313,16 +313,21 @@ app.post('/test-react-name', (req, res) => {
 })
 // delete
 app.post('/test-react-delete', (req, res) => {
-    console.log('deleting task')
-    Task.getById(req.body.iDToDelete)
-    .then(task => {
-        User.getById(req.session.user.id)
-        .then(user => {
-            user.removeTask(task.id)
-            .then(() => task.removeParent(req.session.task))
+    if (req.session.user.root_task_id != req.body.iDToDelete) {
+        console.log('deleting task')
+        Task.getById(req.body.iDToDelete)
+        .then(task => {
+            User.getById(req.session.user.id)
+            .then(user => {
+                user.removeTask(task.id)
+                .then(() => task.removeParent(req.session.task))
+            })
         })
-    })
-    .then(() => res.redirect('test-react'))
+        .then(() => res.redirect('test-react'))
+    } else {
+        console.log('prevented root task delete')
+        res.redirect('test-react')
+    }
 })
 
 app.listen(port, () => console.log(`My Task App listening on port ${port}!`))

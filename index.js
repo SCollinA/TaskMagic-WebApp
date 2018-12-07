@@ -31,6 +31,11 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 app.use(bodyParser.json())
 
+app.use(function(req, res, next) {
+    req.url = req.url.slice(4)
+    next();
+  });
+
 
 // middleware
 function protectRoute(req, res, next) {

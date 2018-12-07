@@ -71,7 +71,7 @@ function checkUser(req, res, next) {
                 next()
             } else {
                 // else redirect to logged in user's rootTask
-                res.redirect('/home')
+                res.redirect('home')
             }
         })
     })
@@ -86,7 +86,7 @@ function checkTask(req, res, next) {
         next()
     } else {
         console.log('no task selected')
-        res.redirect('/logout')
+        res.redirect('logout')
     }
     // else {
     //     res.redirect('/login')
@@ -109,7 +109,7 @@ app.post('/login', (req, res) => {
     .then(user => {
         if (user.matchPassword(password)) {
             req.session.user = user
-            res.redirect(`/home`)
+            res.redirect(`home`)
         } else {
             console.log('bad password')
             res.send({currentTask: {name: 'Bad password...'}})
@@ -144,7 +144,7 @@ app.post('/register', (req, res) => {
         Task.add(`${userName}'s life`)
         .then(task => {
             task.assignToUser(user.id)
-            .then(() => res.redirect(`/home`))
+            .then(() => res.redirect(`home`))
         })
     })
     .catch(() => {
@@ -161,7 +161,7 @@ app.get('/home', (req, res) => {
         .then(rootTask => {
             req.session.task = rootTask
             console.log('sending user to /test-react')
-            res.redirect('/test-react')
+            res.redirect('test-react')
         })
     })
 })
@@ -252,7 +252,7 @@ app.post('/test-react', protectRoute, (req, res) => {
             .then(() => task.addParent(req.session.task))
         })
     })
-    .then(() => res.redirect('/test-react'))
+    .then(() => res.redirect('test-react'))
 })
 // retrieve
 app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
@@ -296,20 +296,20 @@ app.post('/test-react-task', (req, res) => {
     console.log('selecting new task')
     console.log(req.body.taskToSelect)
     req.session.task = req.body.taskToSelect
-    res.redirect('/test-react')
+    res.redirect('test-react')
 })
 //update
 app.post('/test-react-complete', (req, res) => {
     Task.getById(req.body.id)
     .then(task => task.toggleActive())
-    .then(() => res.redirect('/test-react'))
+    .then(() => res.redirect('test-react'))
 })
 
 app.post('/test-react-name', (req, res) => {
     console.log('updating name')
     Task.getById(req.body.taskToUpdate.id)
     .then(task => task.updateName(req.body.name))
-    .then(() => res.redirect('/test-react'))
+    .then(() => res.redirect('test-react'))
 })
 // delete
 app.post('/test-react-delete', (req, res) => {
@@ -322,7 +322,7 @@ app.post('/test-react-delete', (req, res) => {
             .then(() => task.removeParent(req.session.task))
         })
     })
-    .then(() => res.redirect('/test-react'))
+    .then(() => res.redirect('test-react'))
 })
 
 app.listen(port, () => console.log(`My Task App listening on port ${port}!`))

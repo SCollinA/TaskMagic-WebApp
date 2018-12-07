@@ -39,8 +39,8 @@ app.use(function(req, res, next) {
 });
 
 app.use((req, res, next) => {
-    if (res.location.slice(0, 4) == '/api') {
-        res.location = res.location.slice(4)
+    if (res.location.slice(0, 4) != '/api') {
+        res.location = `/api${res.location}`
     }
     next()
 })
@@ -88,7 +88,7 @@ function checkTask(req, res, next) {
         next()
     } else {
         console.log('no task selected')
-        res.redirect('/api/logout')
+        res.redirect('/logout')
     }
     // else {
     //     res.redirect('/login')

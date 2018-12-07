@@ -52,7 +52,7 @@ function protectRoute(req, res, next) {
         next()
     } else {
         console.log('user not authenticated')
-        res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null, userTasks: []})
+        res.send({children: [], currentTask: null, searchTerm: '', user: null, userTasks: []})
     }
 }
 
@@ -126,7 +126,7 @@ app.get('/logout', (req, res) => {
     // res.redirect('/login')
     req.session.destroy()
     console.log(req.session)
-    res.send({children: [], parents: [], currentTask: null, searchTerm: '', selectedTask: null, user: null, userTasks: []})
+    res.send({children: [], parents: [], currentTask: null, searchTerm: '', user: null, userTasks: []})
 })
 
 // app.get('/register', (req, res) => {
@@ -155,6 +155,7 @@ app.post('/register', (req, res) => {
 
 app.get('/home', (req, res) => {
     console.log('user sent to /home')
+    console.log(req.session.user)
     Task.getById(req.session.user.root_task_id)
     .then(rootTask => {
         req.session.task = rootTask
@@ -306,7 +307,12 @@ app.post('/test-react-name', (req, res) => {
     console.log('updating name')
     Task.getById(req.body.taskToUpdate.id)
     .then(task => task.updateName(req.body.name))
-    .then(() => res.redirect('test-react'))
+    .then(() => {
+        if (req.body.taskToUpdate.id == req.session.task.id) {
+            req.session.task = {...req.session.task, name: req.body.name}
+        }
+        res.redirect('test-react')
+    })
 })
 // delete
 app.post('/test-react-delete', (req, res) => {

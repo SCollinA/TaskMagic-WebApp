@@ -155,14 +155,11 @@ app.post('/register', (req, res) => {
 
 app.get('/home', (req, res) => {
     console.log('user sent to /home')
-    User.getById(req.session.user.id)
-    .then(user => {
-        user.rootTask()
-        .then(rootTask => {
-            req.session.task = rootTask
-            console.log('sending user to /test-react')
-            res.redirect('test-react')
-        })
+    Task.getById(req.session.user.root_task_id)
+    .then(rootTask => {
+        req.session.task = rootTask
+        console.log('sending user to /test-react')
+        res.redirect('test-react')
     })
 })
 // define endpoints

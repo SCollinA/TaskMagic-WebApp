@@ -39,10 +39,7 @@ app.use(function(req, res, next) {
 });
 
 app.use((req, res, next) => {
-    res.lo
-    if (res.getHeader('Location').slice(0, 4) != '/api') {
-        res.location(`/api${res.getHeader('location')}`)
-    }
+    res.location(`/api`)
     next()
 })
 

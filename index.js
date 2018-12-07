@@ -66,7 +66,7 @@ function checkUser(req, res, next) {
                 next()
             } else {
                 // else redirect to logged in user's rootTask
-                res.redirect('/home')
+                res.redirect('./home')
             }
         })
     })

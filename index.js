@@ -34,11 +34,16 @@ app.use(bodyParser.json())
 app.use(function(req, res, next) {
     if (req.url.slice(0, 4) == '/api') {
         req.url = req.url.slice(4)
-    } else {
-        
     }
     next();
-  });
+});
+
+app.use((req, res, next) => {
+    if (res.location.slice(0, 4) == '/api') {
+        res.location = res.location.slice(4)
+    }
+    next()
+})
 
 
 // middleware
@@ -68,7 +73,7 @@ function checkUser(req, res, next) {
                 next()
             } else {
                 // else redirect to logged in user's rootTask
-                res.redirect('/api/home')
+                res.redirect('/home')
             }
         })
     })

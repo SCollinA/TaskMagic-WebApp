@@ -44,10 +44,8 @@ class Task {
         const User = require('./User')
         return db.any('select users.id, users.name, users.pwhash from users join users_Tasks ut on users.id=ut.user_id join Tasks on ut.Task_id=Tasks.id where Tasks.id=$1', [this.id])
         .then(resultsArray => {
-            console.log(resultsArray, this)
             return resultsArray.map(result => new User(result.id, result.name, result.pwhash))
         })
-
         // return db.any('select * from links where Task_id=$1', [this.id])
         // .then(resultsArray => Promise.all(resultsArray.map(result => User.getById(result.id))))
     }
@@ -105,18 +103,34 @@ class Task {
 
     addParent(parentTask) {
         return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [parentTask.id, this.id])
+        // .then(() => {
+        //     Task.getById(parentTask.id)
+        //     .then(task => task.addChild(this))
+        // })
     }
 
     removeParent(parentTask) {
         return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [parentTask.id, this.id])
+        // .then(() => {
+        //     Task.getById(parentTask.id)
+        //     .then(task => task.removeChild(this))
+        // })
     }
 
-    addChild(task) {
-        return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, task.id])
+    addChild(childTask) {
+        return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, childTask.id])
+        // .then(() => {
+        //     Task.getById(childTask.id)
+        //     .then(task => task.removeParent(this))
+        // })
     }
 
-    removeChild(task) {
-        return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [this.id, task.id])
+    removeChild(childTask) {
+        return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [this.id, childTask.id])
+        // .then(() => {
+        //     Task.getById(childTask.id)
+        //     .then(task => task.removeParent(this))
+        // })
     }
 
     // delete

@@ -40,7 +40,7 @@ function protectRoute(req, res, next) {
         next()
     } else {
         console.log('user not authenticated')
-        res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
+        res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null, userTasks: []})
     }
 }
 
@@ -53,7 +53,6 @@ function checkUser(req, res, next) {
         // get users for task
         task.getUsers()
         .then(users => {
-            console.log(users, task)
             // map to ids of users
             // if current user's id is in tasks users ids
             if (users.map(user => user.id).includes(req.session.user.id)) {
@@ -111,9 +110,11 @@ app.post('/login', (req, res) => {
 })
 
 app.get('/logout', (req, res) => {
+    console.log('logging out')
     // res.redirect('/login')
     req.session.destroy()
-    res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
+    console.log(req.session)
+    res.send({children: [], parents: [], currentTask: null, searchTerm: '', selectedTask: null, user: null, userTasks: []})
 })
 
 // app.get('/register', (req, res) => {
@@ -231,7 +232,6 @@ app.get('/home', (req, res) => {
 // REACT methods below >>
 // create
 app.post('/test-react', protectRoute, (req, res) => {
-    console.log(req.body.taskName)
     return Task.add(req.body.taskName)
     .then(task => {
         User.getById(req.session.user.id)
@@ -256,9 +256,28 @@ app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
         })))
         .then(children => {
             task.getParents()
-            .then(parents => res.json({parents, currentTask: req.session.task, children, user: req.session.user}))
+            .then(parents => {
+                User.getById(req.session.user.id)
+                .then(user => user.getAllTasks())
+                .then(userTasks => {
+                    console.log('everything is good')
+                    res.json({parents, 
+                        currentTask: req.session.task, 
+                        children, 
+                        user: req.session.user,
+                        userTasks
+                    })
+                })
+            })
         })
     })
+})
+
+app.get('/test-react-all-tasks', (req, res) => {
+    console.log('getting all tasks for user')
+    User.getById(req.session.user.id)
+    .then(user => user.getAllTasks())
+    .then(tasks => res.json(tasks))
 })
 
 app.post('/test-react-task', (req, res) => {
@@ -275,16 +294,21 @@ app.post('/test-react-complete', (req, res) => {
 })
 
 app.post('/test-react-name', (req, res) => {
+    console.log('updating name')
     Task.getById(req.body.taskToUpdate.id)
     .then(task => task.updateName(req.body.name))
     .then(() => res.redirect('/test-react'))
 })
 // delete
-app.delete('/test-react-delete', (req, res) => {
-    Task.getById(req.body.taskID)
+app.post('/test-react-delete', (req, res) => {
+    console.log('deleting task')
+    Task.getById(req.body.iDToDelete)
     .then(task => {
-        User.getById(req.session.user)
-        .then(user => user.removeTask(task.id))
+        User.getById(req.session.user.id)
+        .then(user => {
+            user.removeTask(task.id)
+            .then(() => task.removeParent(req.session.task))
+        })
     })
     .then(() => res.redirect('/test-react'))
 })

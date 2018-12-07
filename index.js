@@ -40,7 +40,7 @@ function protectRoute(req, res, next) {
         next()
     } else {
         console.log('user not authenticated')
-        res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
+        res.send({children: [], currentTask: null, searchTerm: '', selectedTask: null, user: null, userTasks: []})
     }
 }
 
@@ -113,7 +113,8 @@ app.get('/logout', (req, res) => {
     console.log('logging out')
     // res.redirect('/login')
     req.session.destroy()
-    res.send({children: [], parents: [], currentTask: null, searchTerm: '', selectedTask: null, user: null})
+    console.log(req.session)
+    res.send({children: [], parents: [], currentTask: null, searchTerm: '', selectedTask: null, user: null, userTasks: []})
 })
 
 // app.get('/register', (req, res) => {
@@ -256,8 +257,17 @@ app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
         .then(children => {
             task.getParents()
             .then(parents => {
-                console.log('everything is good')
-                res.json({parents, currentTask: req.session.task, children, user: req.session.user})
+                User.getById(req.session.user.id)
+                .then(user => user.getAllTasks())
+                .then(userTasks => {
+                    console.log('everything is good')
+                    res.json({parents, 
+                        currentTask: req.session.task, 
+                        children, 
+                        user: req.session.user,
+                        userTasks
+                    })
+                })
             })
         })
     })
@@ -297,7 +307,7 @@ app.post('/test-react-delete', (req, res) => {
         User.getById(req.session.user.id)
         .then(user => {
             user.removeTask(task.id)
-            .then(() => task.removeParent())
+            .then(() => task.removeParent(req.session.task))
         })
     })
     .then(() => res.redirect('/test-react'))

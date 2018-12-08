@@ -268,14 +268,21 @@ app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
             task.getParents()
             .then(parents => {
                 User.getById(req.session.user.id)
-                .then(user => user.getAllTasks())
-                .then(userTasks => {
-                    console.log('everything is good')
-                    res.json({parents, 
-                        currentTask: req.session.task, 
-                        children, 
-                        user: req.session.user,
-                        userTasks
+                // update all users tasks
+                .then(user => {
+                    user.getAllTasks()
+                    .then(userTasks => {
+                        Task.getById(req.session.task.id)
+                        .then(currentTask => {
+                            console.log('everything is good')
+                            res.json({
+                                parents, 
+                                currentTask, 
+                                children, 
+                                user,
+                                userTasks
+                            })
+                        })
                     })
                 })
             })

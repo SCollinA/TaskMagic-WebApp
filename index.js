@@ -299,7 +299,55 @@ app.post('/test-react-task', (req, res) => {
 //update
 app.post('/test-react-complete', (req, res) => {
     Task.getById(req.body.id)
-    .then(task => task.toggleActive())
+    .then(task => {
+        task.setActive(!task.active)
+        // insert logic to auto deactivate all children and parents with no children active
+        then(() => {
+            if (!task.active) {
+                // get active siblings only and check length
+                task.getActiveSiblingsAndCommonParentObject()
+                .then(obj => {
+                    const parent = obj.parent
+                    const activeSiblings = obj.activeSiblings
+                    // if there are any, do not set parent to inactive
+                    if (activeSiblings.length == 0) {
+                        // should be same as task, inactive
+                        parent.setActive(task.active)
+                    }
+                    // check siblings to see if none of them are active
+                    // this means this child was last completed
+                    // OR operator will not evaluate right side if true
+                    // either sibling is inactive
+                    // or the sibling is active
+                    // siblings.forEach(sibling => {
+                    //     !sibling.active || ({
+                    //         // if there aren't any siblings active
+
+                    //     })
+                    // })
+                })
+            // task was marked active, so mark all of it's parents active
+            } else {
+                task.getParents()
+                // should be same as task, active
+                .then(parents => parents.setActive(task.active))
+            }
+        })
+        .then(() => {
+            // get all the children and toggle them like this task was toggled
+            // ERROR will not work: if child is active/inactive, toggle parent, child is inactive/active = random
+            // better to use setActive(boolean)
+            // set children of task to whatever task was changed to
+            task.getChildren()
+            .then(children => children.forEach(child => child.setActive(task.active)))
+        })
+        // .then(() => {
+        //     task.getParents()
+        //     .then(parents => parents.forEach(parent => {
+        //         parent.getChildren()
+        //     }))
+        // })
+    })
     .then(() => res.redirect('test-react'))
 })
 

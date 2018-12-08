@@ -94,12 +94,18 @@ class Task {
         return db.result('delete from users_Tasks where user_id=$1 and Task_id=$2', [user_id, this.id])
     }
 
-    toggleActive() {
-        this.active = !this.active
+    setActive(active) {
+        this.active = active
         const currentTime = new Date()
         currentTime.setHours(currentTime.getHours() - (currentTime.getTimezoneOffset() / 60)) 
         return db.result('update Tasks set active=$1, time_changed=$2 where id=$3', [this.active, currentTime, this.id])
     }
+    // toggleActive() {
+    //     this.active = !this.active
+    //     const currentTime = new Date()
+    //     currentTime.setHours(currentTime.getHours() - (currentTime.getTimezoneOffset() / 60)) 
+    //     return db.result('update Tasks set active=$1, time_changed=$2 where id=$3', [this.active, currentTime, this.id])
+    // }
 
     addParent(parentTask) {
         return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [parentTask.id, this.id])

@@ -20,7 +20,7 @@ insert into users
 (name, pwhash, root_task_id)
 values
 ('collin', '$2b$10$fSgsCMP09txXoeKRY2qAbO3XbEv/rcvbhmZ88N1LTrnwqyETxj.Pq', 13),
-('hallie', '$2b$10$b6eYPITqCXvCF6kSrUVls.F48/NIjunEd/RmkAKJml1a7lFSo8IxC', 14);
+('hallie', '$2b$10$tK7FMrsKZA3sEprZVqaIbOz/0cFuo.LOcsztiyJHjBrlrhqsWhMPm', 14);
 
 insert into parents_children
 (parent_task_id, child_task_id)

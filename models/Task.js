@@ -109,9 +109,13 @@ class Task {
 
     // recursive method to set all descendants to matching active state
     setChildrenActive(active) {
+        console.log(`setting ${this.name} ${active}`)
         return this.getChildren()
         .then(children => {
-            return Promise.all(children.map(child => child.setChildrenActive(active)))
+            return Promise.all(children.map(child => {
+                return child.setActive(active)
+                .then(() => child.setChildrenActive(active))
+            }))
         })
     }
 

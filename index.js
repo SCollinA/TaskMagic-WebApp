@@ -319,55 +319,28 @@ app.post('/test-react-complete', (req, res) => {
                             return parent.getChildren()
                             .then(children => {
                                 // if no children are active
-                                if (children.filter(child => child.active).length == 0) {
+                                if (children.filter(child => child.active).length == 0 && parent.id != rootTaskID) {
                                     // mark parent as inactive
+                                    console.log(`marking ${parent.name} ${task.active}`)
                                     return parent.setActive(task.active)
                                 }
                             })
                         }))
                     })
-                    // .then(objs => {
-                        // objs.forEach(obj => {
-                            //     const parent = obj.parent
-                            //     const activeSiblings = obj.activeSiblings
-                            //     // if there are any, do not set parent to inactive
-                            //     if (activeSiblings.length == 0) {
-                                //         // should be same as task, inactive
-                                //         parent.setActive(task.active)
-                                //     }
-                                // check siblings to see if none of them are active
-                                // this means this child was last completed
-                                // OR operator will not evaluate right side if true
-                                // either sibling is inactive
-                                // or the sibling is active
-                                // siblings.forEach(sibling => {
-                                    //     !sibling.active || ({
-                                        //         // if there aren't any siblings active
-                                        
-                                        //     })
-                                        // })
-                                        // })
-                                        // })
                 } else {
                     // task was marked active, so mark all of it's parents active
                     return task.getParents()
                     // should be same as task, active
-                    .then(parents => parents.setActive(task.active))
+                    .then(parents => Promise.all(parents.map(parent => parent.setActive(task.active))))
                 }
             })
             .then(() => {
-                // get all the children and toggle them like this task was toggled
-                // ERROR will not work: if child is active/inactive, toggle parent, child is inactive/active = random
-                // better to use setActive(boolean)
+                console.log(`setting children ${task.active}`)
                 // set children of task to whatever task was changed to
-                // and set their children to that
-                return task.getChildren()
-                .then(children => {
-                    return Promise.all(children.map(child => child.setChildrenActive(task.active)))
-                })
+                return task.setChildrenActive(task.active)
             })
         }
-    })
+    }) 
     .then(() => res.redirect('test-react'))
 })
 

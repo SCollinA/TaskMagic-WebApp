@@ -78,6 +78,12 @@ class Task {
         order by active desc, time_changed asc`, [this.id])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
+
+    // getActiveSiblingsAndCommonParentObject() {
+    //     // get all parents for task, then get all children of those parents
+    //     // make objects with parents and appropriate active children
+    //     return db.any(`select * from tasks join parents_children pc on tasks.id=pc.`)
+    // }
     
     // update  
     updateName(newName) {
@@ -94,11 +100,23 @@ class Task {
         return db.result('delete from users_Tasks where user_id=$1 and Task_id=$2', [user_id, this.id])
     }
 
-    toggleActive() {
-        this.active = !this.active
+    setActive(active) {
+        this.active = active
         const currentTime = new Date()
         currentTime.setHours(currentTime.getHours() - (currentTime.getTimezoneOffset() / 60)) 
         return db.result('update Tasks set active=$1, time_changed=$2 where id=$3', [this.active, currentTime, this.id])
+    }
+
+    // recursive method to set all descendants to matching active state
+    setChildrenActive(active) {
+        console.log(`setting ${this.name} ${active}`)
+        return this.getChildren()
+        .then(children => {
+            return Promise.all(children.map(child => {
+                return child.setActive(active)
+                .then(() => child.setChildrenActive(active))
+            }))
+        })
     }
 
     addParent(parentTask) {

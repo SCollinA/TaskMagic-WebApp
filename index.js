@@ -268,14 +268,21 @@ app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
             task.getParents()
             .then(parents => {
                 User.getById(req.session.user.id)
-                .then(user => user.getAllTasks())
-                .then(userTasks => {
-                    console.log('everything is good')
-                    res.json({parents, 
-                        currentTask: req.session.task, 
-                        children, 
-                        user: req.session.user,
-                        userTasks
+                // update all users tasks
+                .then(user => {
+                    user.getAllTasks()
+                    .then(userTasks => {
+                        Task.getById(req.session.task.id)
+                        .then(currentTask => {
+                            console.log('everything is good')
+                            res.json({
+                                parents, 
+                                currentTask, 
+                                children, 
+                                user,
+                                userTasks
+                            })
+                        })
                     })
                 })
             })
@@ -298,8 +305,49 @@ app.post('/test-react-task', (req, res) => {
 })
 //update
 app.post('/test-react-complete', (req, res) => {
+    // insert logic to auto deactivate all children and parents with no children active
+    const rootTaskID = req.session.user.root_task_id
+    // get task
     Task.getById(req.body.id)
-    .then(task => task.toggleActive())
+    .then(task => {
+        // if its not the root task
+        if (rootTaskID != task.id) {
+            // set it to active
+            return task.setActive(!task.active)
+            .then(() => {
+                // if it was set to inactive
+                if (!task.active) {
+                    // get all parents
+                    return task.getParents()
+                    .then(parents => {
+                        // set all parents with no active children to inactive
+                        return Promise.all(parents.map(parent => {
+                            // get all their children
+                            return parent.getChildren()
+                            .then(children => {
+                                // if no children are active
+                                if (children.filter(child => child.active).length == 0 && parent.id != rootTaskID) {
+                                    // mark parent as inactive
+                                    console.log(`marking ${parent.name} ${task.active}`)
+                                    return parent.setActive(task.active)
+                                }
+                            })
+                        }))
+                    })
+                } else {
+                    // task was marked active, so mark all of it's parents active
+                    return task.getParents()
+                    // should be same as task, active
+                    .then(parents => Promise.all(parents.map(parent => parent.setActive(task.active))))
+                }
+            })
+            .then(() => {
+                console.log(`setting children ${task.active}`)
+                // set children of task to whatever task was changed to
+                return task.setChildrenActive(task.active)
+            })
+        }
+    }) 
     .then(() => res.redirect('test-react'))
 })
 

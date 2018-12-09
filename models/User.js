@@ -26,6 +26,7 @@ class User {
     }
 
     static getByName(name) {
+        console.log(db)
         return db.one('select * from users where name=\'$1:raw\'', [name])
         .then(result => new User(result.id, result.name, result.pwhash, result.root_task_id))
     }

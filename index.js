@@ -256,7 +256,7 @@ app.post('/test-react', protectRoute, (req, res) => {
 })
 // retrieve
 app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
-    console.log('getting user home page')
+    console.log('getting user page')
     return Task.getById(req.session.task.id)
     .then(task => {
         // get the task's children

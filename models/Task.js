@@ -128,6 +128,7 @@ class Task {
     }
 
     removeParent(parentTask) {
+        console.log(`removing parent ${parentTask.name}`)
         return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [parentTask.id, this.id])
         // .then(() => {
         //     Task.getById(parentTask.id)

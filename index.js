@@ -346,9 +346,10 @@ app.post('/test-react-complete', (req, res) => {
                     })
                 } else {
                     // task was marked active, so mark all of it's parents active
+                    // if they are not already
                     return task.getParents()
                     // should be same as task, active
-                    .then(parents => Promise.all(parents.map(parent => parent.setActive(task.active))))
+                    .then(parents => Promise.all(parents.map(parent => parent.active || parent.setActive(task.active))))
                 }
             })
             .then(() => {

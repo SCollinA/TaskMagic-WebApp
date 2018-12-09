@@ -115,7 +115,8 @@ app.post('/login', (req, res) => {
             res.send({currentTask: {name: 'Bad password...'}})
         }
     })
-    .catch(() => {
+    .catch(err => {
+        console.log(err)
         console.log(`${userName} not found`)
         res.send({currentTask: {name: `${userName} not found...`}})
     })

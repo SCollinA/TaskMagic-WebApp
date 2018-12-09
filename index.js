@@ -306,6 +306,14 @@ app.post('/test-react-task', (req, res) => {
     res.redirect('test-react')
 })
 //update
+app.post('/test-react-sub-task', (req, res) => {
+    const currentTaskID = req.session.task.id
+    const subTaskID = req.body.taskID
+    Task.getById(currentTaskID)
+    .then(task => task.addChild({id: subTaskID}))
+    .then(() => res.redirect('/test-react'))
+})
+
 app.post('/test-react-complete', (req, res) => {
     // insert logic to auto deactivate all children and parents with no children active
     const rootTaskID = req.session.user.root_task_id

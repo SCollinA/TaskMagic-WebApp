@@ -117,7 +117,7 @@ app.post('/login', (req, res) => {
     })
     .catch(err => {
         console.log(err)
-        console.log(process.env.DB_NAME)
+        console.log(process.env)
         console.log(`${userName} not found`)
         res.send({currentTask: {name: `${userName} not found...`}})
     })

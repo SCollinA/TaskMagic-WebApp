@@ -379,18 +379,18 @@ app.post('/test-react-name', (req, res) => {
 // delete
 app.post('/test-react-delete', (req, res) => {
     if (req.session.user.root_task_id != req.body.iDToDelete) {
-        console.log('deleting task')
         Task.getById(req.body.iDToDelete)
         .then(task => {
+            console.log(`deleting task ${task.name}`)
             task.removeParent(req.session.task)
             .then(() => {
-                task.getAncestorsUsers()
-                .then(users => {
-                    console.log('checking task ancestors')
-                    users.filter(user => user.id === req.session.user.id).length > 0 &&
-                    User.getById(req.session.user.id)
-                    .then(user => user.removeTask(task.id))
-                })
+                // task.getAncestorsUsers()
+                // .then(users => {
+                //     console.log('checking task ancestors')
+                //     users.filter(user => user.id === req.session.user.id).length > 0 &&
+                //     User.getById(req.session.user.id)
+                //     .then(user => user.removeTask(task.id))
+                // })
             })
         })
         .then(() => res.redirect('test-react'))

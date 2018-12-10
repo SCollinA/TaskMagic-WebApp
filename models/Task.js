@@ -1,4 +1,5 @@
 const db = require('./db')
+const User = require('./User')
 
 class Task {
     constructor(id, name, active, time_created, time_changed) {
@@ -92,6 +93,7 @@ class Task {
     }
 
     getAncestorsUsers() {
+        const User = require('./User')
         return db.any(`
             select distinct users.* from tasks child
             join parents_children pc

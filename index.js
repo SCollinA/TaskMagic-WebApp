@@ -318,7 +318,7 @@ app.post('/test-react-sub-task', (req, res) => {
     Task.getById(subTaskID)
     // prevent subtask task to itself
     .then(task => currentTaskID !== subTaskID && task.addParent({id: currentTaskID}))
-    .then(() => res.redirect('/test-react'))
+    .then(() => res.redirect('test-react'))
 })
 
 app.post('/test-react-complete', (req, res) => {

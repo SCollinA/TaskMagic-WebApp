@@ -381,11 +381,12 @@ app.post('/test-react-delete', (req, res) => {
         console.log('deleting task')
         Task.getById(req.body.iDToDelete)
         .then(task => {
-            User.getById(req.session.user.id)
-            .then(user => {
-                user.removeTask(task.id)
-                .then(() => task.removeParent(req.session.task))
-            })
+            // User.getById(req.session.user.id)
+            // .then(user => {
+            //     user.removeTask(task.id)
+            //     .then(() => task.removeParent(req.session.task))
+            task.removeParent(req.session.task)
+            // })
         })
         .then(() => res.redirect('test-react'))
     } else {

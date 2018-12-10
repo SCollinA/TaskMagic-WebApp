@@ -80,6 +80,21 @@ class Task {
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
     }
 
+    getParentsForUserId(userID) {
+        return db.any(`
+        select parent.*
+        from tasks child
+        join parents_children pc
+        on child.id=pc.child_task_id
+        join tasks parent
+        on parent.id=pc.parent_task_id
+        join users_tasks ut
+        on ut.task_id=parent.id
+        where ut.user_id=$1 and child.id=$2
+        `, [userID, this.id])
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
+    }
+
     getAncestors() {
         return db.any(`
             select t.* from tasks
@@ -151,6 +166,13 @@ class Task {
 
     addParent(parentTask) {
         return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [parentTask.id, this.id])
+        .then(() => {
+            Task.getById(parentTask.id)
+            .then(task => {
+                task.getAncestorsUsers()
+                .then(users => users.forEach(user => user.chooseTask(this.id)))
+            })
+        })
         // .then(() => {
         //     Task.getById(parentTask.id)
         //     .then(task => task.addChild(this))
@@ -166,21 +188,21 @@ class Task {
         // })
     }
 
-    addChild(childTask) {
-        return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, childTask.id])
-        // .then(() => {
-        //     Task.getById(childTask.id)
-        //     .then(task => task.removeParent(this))
-        // })
-    }
+    // addChild(childTask) {
+    //     return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, childTask.id])
+    //     // .then(() => {
+    //     //     Task.getById(childTask.id)
+    //     //     .then(task => task.removeParent(this))
+    //     // })
+    // }
 
-    removeChild(childTask) {
-        return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [this.id, childTask.id])
-        // .then(() => {
-        //     Task.getById(childTask.id)
-        //     .then(task => task.removeParent(this))
-        // })
-    }
+    // removeChild(childTask) {
+    //     return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [this.id, childTask.id])
+    //     // .then(() => {
+    //     //     Task.getById(childTask.id)
+    //     //     .then(task => task.removeParent(this))
+    //     // })
+    // }
 
     // delete
     delete() {

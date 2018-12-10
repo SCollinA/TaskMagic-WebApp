@@ -252,6 +252,10 @@ app.post('/test-react', protectRoute, (req, res) => {
             .then(() => task.addParent(req.session.task))
         })
     })
+    // // update all users tasks who own this task
+    // .then(() => {
+    //     Task.getById
+    // })
     .then(() => res.redirect('test-react'))
 })
 // retrieve
@@ -267,7 +271,7 @@ app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
             .then(grandChildren => {return {...child, children: grandChildren}})
         })))
         .then(children => {
-            task.getParents()
+            task.getParentsForUserId(req.session.user.id)
             .then(parents => {
                 User.getById(req.session.user.id)
                 // update all users tasks
@@ -311,9 +315,9 @@ app.post('/test-react-task', (req, res) => {
 app.post('/test-react-sub-task', (req, res) => {
     const currentTaskID = req.session.task.id
     const subTaskID = req.body.taskID
-    Task.getById(currentTaskID)
+    Task.getById(subTaskID)
     // prevent subtask task to itself
-    .then(task => currentTaskID !== subTaskID && task.addChild({id: subTaskID}))
+    .then(task => currentTaskID !== subTaskID && task.addParent({id: currentTaskID}))
     .then(() => res.redirect('/test-react'))
 })
 

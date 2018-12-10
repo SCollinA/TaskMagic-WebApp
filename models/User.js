@@ -41,7 +41,7 @@ class User {
 
     getAllTasks() {
         return db.any(`
-        select Tasks.id, Tasks.name, Tasks.active, Tasks.time_created, Tasks.time_changed 
+        select distinct Tasks.id, Tasks.name, Tasks.active, Tasks.time_created, Tasks.time_changed 
         from Tasks 
             join 
             users_Tasks ut 

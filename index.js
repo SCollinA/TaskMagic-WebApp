@@ -282,7 +282,8 @@ app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
                                 currentTask, 
                                 children, 
                                 user,
-                                userTasks
+                                userTasks,
+                                searchTerm: ''
                             })
                         })
                     })

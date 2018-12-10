@@ -1,4 +1,5 @@
 const db = require('./db')
+const User = require('./User')
 
 class Task {
     constructor(id, name, active, time_created, time_changed) {
@@ -77,6 +78,35 @@ class Task {
         where tasks.id=$1
         order by active desc, time_changed asc`, [this.id])
         .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
+    }
+
+    getAncestors() {
+        return db.any(`
+            select t.* from tasks
+            join parents_children
+            on child_task_id=tasks.id
+            join tasks t
+            on parent_task_id=t.id
+            where tasks.id=12
+        `)
+        .then(resultsArray => resultsArray.map(result => new Task(result.id, result.name, result.active, result.time_created, result.time_changed)))
+    }
+
+    getAncestorsUsers() {
+        const User = require('./User')
+        return db.any(`
+            select distinct users.* from tasks child
+            join parents_children pc
+            on pc.child_task_id=child.id
+            join tasks parent
+            on pc.parent_task_id=parent.id
+            join users_tasks ut
+            on ut.task_id=parent.id
+            join users
+            on users.id=ut.user_id
+            where child.id=12
+        `)
+        .then(userArray => userArray.map(user => new User(user.id, user.name, user.pwhash)))
     }
 
     // getActiveSiblingsAndCommonParentObject() {

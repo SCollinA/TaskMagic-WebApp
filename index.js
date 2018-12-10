@@ -312,7 +312,8 @@ app.post('/test-react-sub-task', (req, res) => {
     const currentTaskID = req.session.task.id
     const subTaskID = req.body.taskID
     Task.getById(currentTaskID)
-    .then(task => task.addChild({id: subTaskID}))
+    // prevent subtask task to itself
+    .then(task => currentTaskID !== subTaskID && task.addChild({id: subTaskID}))
     .then(() => res.redirect('/test-react'))
 })
 
@@ -381,12 +382,16 @@ app.post('/test-react-delete', (req, res) => {
         console.log('deleting task')
         Task.getById(req.body.iDToDelete)
         .then(task => {
-            // User.getById(req.session.user.id)
-            // .then(user => {
-            //     user.removeTask(task.id)
-            //     .then(() => task.removeParent(req.session.task))
             task.removeParent(req.session.task)
-            // })
+            .then(() => {
+                task.getAncestorsUsers()
+                .then(users => {
+                    console.log('checking task ancestors')
+                    users.filter(user => user.id === req.session.user.id).length > 0 &&
+                    User.getById(req.session.user.id)
+                    .then(user => user.removeTask(task.id))
+                })
+            })
         })
         .then(() => res.redirect('test-react'))
     } else {

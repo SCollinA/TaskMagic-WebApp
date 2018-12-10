@@ -258,6 +258,7 @@ app.post('/test-react', protectRoute, (req, res) => {
     // })
     .then(() => res.redirect('test-react'))
 })
+
 // retrieve
 app.get('/test-react', protectRoute, checkTask, checkUser, (req, res) => {
     console.log('getting user page')
@@ -312,6 +313,21 @@ app.post('/test-react-task', (req, res) => {
     res.redirect('test-react')
 })
 //update
+app.post('/test-react-share-task', (req, res) => {
+    console.log(`sharing ${req.body.taskID} with ${req.body.username}`)
+    const userToShare = req.body.username
+    const taskToShare = req.body.taskID
+    User.getByName(userToShare)
+    .then(user => {
+        user.chooseTask(taskToShare)
+        .then(() => {
+            user.rootTask()
+            .then(rootTask => rootTask.addChild({id: taskToShare}))
+        })
+    })
+    .then(() => res.redirect('test-react'))
+})
+
 app.post('/test-react-sub-task', (req, res) => {
     const currentTaskID = req.session.task.id
     const subTaskID = req.body.taskID

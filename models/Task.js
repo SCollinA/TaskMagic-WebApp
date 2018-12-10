@@ -194,21 +194,21 @@ class Task {
         // })
     }
 
-    // addChild(childTask) {
-    //     return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, childTask.id])
-    //     // .then(() => {
-    //     //     Task.getById(childTask.id)
-    //     //     .then(task => task.removeParent(this))
-    //     // })
-    // }
+    addChild(childTask) {
+        return db.result('insert into parents_children (parent_task_id, child_task_id) values ($1, $2)', [this.id, childTask.id])
+        // .then(() => {
+        //     Task.getById(childTask.id)
+        //     .then(task => task.removeParent(this))
+        // })
+    }
 
-    // removeChild(childTask) {
-    //     return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [this.id, childTask.id])
-    //     // .then(() => {
-    //     //     Task.getById(childTask.id)
-    //     //     .then(task => task.removeParent(this))
-    //     // })
-    // }
+    removeChild(childTask) {
+        return db.result('delete from parents_children where parent_task_id=$1 and child_task_id=$2', [this.id, childTask.id])
+        // .then(() => {
+        //     Task.getById(childTask.id)
+        //     .then(task => task.removeParent(this))
+        // })
+    }
 
     // delete
     delete() {

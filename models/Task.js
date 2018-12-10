@@ -119,8 +119,8 @@ class Task {
             on ut.task_id=parent.id
             join users
             on users.id=ut.user_id
-            where child.id=12
-        `)
+            where child.id=$1
+        `, this.id)
         .then(userArray => userArray.map(user => new User(user.id, user.name, user.pwhash)))
     }
 
@@ -169,8 +169,14 @@ class Task {
         .then(() => {
             Task.getById(parentTask.id)
             .then(task => {
+                console.log(`adding parent ${task.name}`)
                 task.getAncestorsUsers()
-                .then(users => users.forEach(user => user.chooseTask(this.id)))
+                .then(users => {
+                    users.forEach(user => {
+                        console.log(`adding ${this.name} to ${user.name} ${users.length}`)
+                        user.chooseTask(this.id)
+                    })
+                })
             })
         })
         // .then(() => {

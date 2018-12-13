@@ -128,7 +128,7 @@ app.get('/logout', (req, res) => {
     // res.redirect('/login')
     req.session.destroy()
     console.log(req.session)
-    res.send({children: [], parents: [], currentTask: null, searchTerm: '', user: null, userTasks: []})
+    res.send({children: [], parents: [], currentTask: null, searchTerm: '', user: null, userTasks: [], previousTasks: []})
 })
 
 // app.get('/register', (req, res) => {

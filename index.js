@@ -12,7 +12,7 @@ const bodyParser = require('body-parser')
 
 const express = require('express')
 const app = express()
-const port = 3001
+const port = 3000
 
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
@@ -31,17 +31,17 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 app.use(bodyParser.json())
 
-app.use(function(req, res, next) {
-    if (req.url.slice(0, 4) == '/api') {
-        req.url = req.url.slice(4)
-    }
-    next();
-});
+// app.use(function(req, res, next) {
+//     if (req.url.slice(0, 4) == '/api') {
+//         req.url = req.url.slice(4)
+//     }
+//     next();
+// });
 
-app.use((req, res, next) => {
-    res.location(`/api`)
-    next()
-})
+// app.use((req, res, next) => {
+//     res.location(`/api`)
+//     next()
+// })
 
 
 // middleware

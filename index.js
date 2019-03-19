@@ -21,6 +21,7 @@ app.use(session({
     store: new pgSession({
         pgPromise: db
     }),
+    resave: false,
     secret: 'random123',
     saveUninitialized: false
 }));
